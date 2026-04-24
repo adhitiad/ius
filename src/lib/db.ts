@@ -5,6 +5,9 @@ type LocalUser = {
   password: string;
 };
 
+// PERINGATAN: Database dalam memori yang di-reset setiap server restart atau hot reload
+// INI TIDAK COCOK UNTUK PRODUKSI dan akan kehilangan semua data pengguna.
+// Untuk produksi, gunakan database permanen seperti PostgreSQL, MongoDB, atau SQLite.
 const users: LocalUser[] = [];
 
 export async function findUserByEmail(email: string): Promise<LocalUser | null> {

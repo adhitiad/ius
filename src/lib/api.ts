@@ -28,34 +28,24 @@ const getCookie = (name: string): string | undefined => {
 };
 
 // Request Interceptor: Inject JWT Token
-api.interceptors.request.use(
-  (config) => {
-    let token: string | null = null;
+  api.interceptors.request.use(
+    (config) => {
+      let token: string | null = null;
 
-    // 1. Try to get from Cookie first (for SSR compatibility if needed)
-    token = getCookie("auth_token") || null;
+      // 1. Try to get from Cookie first (for SSR compatibility)
+      token = getCookie("auth_token") || null;
 
-    // 2. Fallback to localStorage (Zustand persist)
-    if (!token && typeof window !== "undefined") {
-      const stored = localStorage.getItem("auth-storage");
-      if (stored) {
-        try {
-          const parsed = JSON.parse(stored);
-          token = parsed.state?.token || null;
-        } catch (e) {
-          console.error("Failed to parse auth-storage", e);
-        }
+      // Removed localStorage fallback to prevent SSR hydration errors
+      // Only use cookies for token storage in SSR context
+
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
       }
-    }
 
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+      return config;
+    },
+    (error) => Promise.reject(error)
+  );
 
 // Response Interceptor: Handle 401 Unauthorized
 api.interceptors.response.use(
@@ -65,6 +55,8 @@ api.interceptors.response.use(
       if (typeof window !== "undefined") {
         const isSecure = typeof location !== 'undefined' && location.protocol === "https:";
         document.cookie = `auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict${isSecure ? "; Secure" : ""}`;
+        // Dispatch event untuk sinkronisasi state auth store
+        window.dispatchEvent(new Event("auth:logout"));
         // Redirect to login page
         window.location.href = "/login?expired=true";
       }

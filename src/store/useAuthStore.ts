@@ -17,12 +17,16 @@ interface AuthState {
 const COOKIE_MAX_AGE = 60 * 60 * 24; // 24h
 
 const setTokenCookie = (token: string) => {
+  // Hanya jalankan di sisi client untuk mencegah SSR error
+  if (typeof window === "undefined") return;
   if (typeof document === "undefined") return;
   const isSecure = location.protocol === "https:";
   document.cookie = `auth_token=${token}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Strict${isSecure ? "; Secure" : ""}`;
 };
 
 const clearTokenCookie = () => {
+  // Hanya jalankan di sisi client untuk mencegah SSR error
+  if (typeof window === "undefined") return;
   if (typeof document === "undefined") return;
   document.cookie = "auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
 };
