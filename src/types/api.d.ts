@@ -37,6 +37,7 @@ export interface LoginCredentials {
 
 export interface LoginResponse {
   access_token: string;
+  refresh_token?: string;
   token_type: string;
 }
 
@@ -45,14 +46,42 @@ export interface NewsTickerResponse {
 }
 
 export interface ScreenerItem {
-  name: string;
   ticker: string;
   price: number;
-  win_rate: number;
+  change: number;
+  ema_200: number;
+  rsi: number;
+  win_rate_prob: number;
+  bandar_score: number;
+  bandar_label: string;
+  spike_ratio: number;
+  signal: string;
+  sl?: number;
+
+  winrate?: string;
+  order_type?: string;
 }
 
 export interface ScreenerResponse {
   top_20: ScreenerItem[];
+}
+
+export interface SmartScreenerItem {
+  ticker: string;
+  composite_score: number;
+  rank: number;
+  label: string;
+  fundamental_score: number;
+  momentum_score: number;
+  price: number;
+}
+
+export interface RSIResponse {
+  ticker: string;
+  rsi: number;
+  sector_avg_rsi: number;
+  status: string;
+  sector: string;
 }
 
 export interface MarketSignal {
@@ -61,6 +90,41 @@ export interface MarketSignal {
   sentiment_score: number;
   order_book_status: string;
   recommendation: string;
+}
+
+export interface ChartDataPoint {
+  timestamp: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+}
+
+export interface OrderBlock {
+  price: number;
+  type: "bullish" | "bearish";
+  coordinates: {
+    start: string;
+    end: string;
+  };
+}
+
+export interface ChartResponse {
+  ticker: string;
+  data: ChartDataPoint[];
+  order_blocks: OrderBlock[];
+}
+
+export interface BacktestHistoryItem {
+  date: string;
+  capital: number;
+  profit_loss: number;
+}
+
+export interface BacktestResponse {
+  history: BacktestHistoryItem[];
+  final_profit_pct: number;
 }
 
 export interface FinanceDashboardResponse {
@@ -92,4 +156,37 @@ export interface SystemHealthResponse {
   safety: {
     kill_switch: "ON" | "OFF";
   };
+}
+
+export interface RadarNewsItem {
+  source: string;
+  title: string;
+  link: string;
+  published: string;
+  summary: string;
+  ai_relevance?: number;
+  ai_sentiment?: "positive" | "negative" | "neutral";
+  ai_reason?: string;
+}
+
+export interface MarketIndex {
+  IndexCode: string;
+  Name: string;
+  Closing: string;
+  Change: string;
+  Percent: string;
+  Current: string;
+  Time: string;
+}
+
+export interface RadarResponse {
+  daily_summary: string;
+  telegram_score: number;
+  last_update: string | null;
+  rss_news: RadarNewsItem[];
+  market_indices?: MarketIndex[];
+}
+
+export interface SynopsisResponse {
+  synopsis: string;
 }

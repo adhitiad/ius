@@ -8,7 +8,7 @@ interface UserSession {
   email: string;
   plan: PlanType;
   role: RoleType;
-  investmentReturnPercentage: number;
+  returnPercentage: number;
   telegramId?: string;
   subscription?: {
     tier: "Basic" | "Pro" | "VIP";

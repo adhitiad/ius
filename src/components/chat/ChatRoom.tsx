@@ -173,7 +173,22 @@ export const ChatRoom = () => {
                           ? "bg-emerald-600 text-white rounded-tr-none px-4 pr-10" 
                           : "bg-muted/80 text-foreground rounded-tl-none border border-border/50 px-4"
                       )}>
-                        {msg.text}
+                        {(() => {
+                          const thinkingMatch = msg.text.match(/<thinking>([\s\S]*?)<\/thinking>/);
+                          const textWithoutThinking = msg.text.replace(/<thinking>[\s\S]*?<\/thinking>/, '').trim();
+                          
+                          return (
+                            <>
+                              {thinkingMatch && (
+                                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 mb-2 font-mono text-[10px] text-emerald-400 italic">
+                                  <Bot className="size-3" />
+                                  <span>Brain is reasoning...</span>
+                                </div>
+                              )}
+                              <div className="whitespace-pre-wrap">{textWithoutThinking}</div>
+                            </>
+                          );
+                        })()}
                         
                         {/* Hover Action for User */}
                         {isUser && (

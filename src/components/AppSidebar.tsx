@@ -14,6 +14,8 @@ import {
   ChevronRight,
   User,
   MessageSquare,
+  Brain,
+  Shield,
 } from "lucide-react"
 import { useChatStore } from "@/store/useChatStore"
 
@@ -58,6 +60,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       isActive: pathname === "/dashboard",
     },
     {
+      title: "Neural Intelligence",
+      url: "/intelligence",
+      icon: Brain,
+      isActive: pathname === "/intelligence",
+    },
+    {
       title: "Chat",
       url: "/chat",
       icon: MessageSquare,
@@ -96,6 +104,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   ]
 
   const navSecondary = [
+    {
+      title: "Security Vault",
+      url: "/security",
+      icon: Shield,
+    },
     {
       title: "Pricing",
       url: "/pricing",
@@ -170,11 +183,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     </>
                   ) : (
                     <SidebarMenuButton asChild tooltip={item.title} isActive={pathname === item.url}>
-                      <Link href={item.url} className="relative flex-1">
-                        {item.icon && <item.icon />}
-                        <span>{item.title}</span>
+                      <Link href={item.url} className="relative flex-1 group/item">
+                        {item.icon && <item.icon className="transition-transform group-hover/item:scale-110" />}
+                        <span className="font-medium">{item.title}</span>
+                        {item.isActive && (
+                          <div className="absolute left-0 w-1 h-6 bg-primary rounded-full shadow-[0_0_12px_var(--primary)] animate-pulse" />
+                        )}
                         {item.title === "Chat" && totalUnreadCount > 0 && (
-                          <span className="absolute right-2 top-1/2 -translate-y-1/2 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white animate-bounce shadow-sm">
+                          <span className="absolute right-2 top-1/2 -translate-y-1/2 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-black text-black shadow-[0_0_10px_var(--primary)] animate-bounce">
                             {totalUnreadCount}
                           </span>
                         )}

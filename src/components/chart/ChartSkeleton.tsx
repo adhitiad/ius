@@ -25,7 +25,7 @@ export function ChartSkeleton() {
             key={i} 
             className="w-full bg-zinc-900/40 rounded-sm animate-pulse" 
             style={{ 
-              height: `${Math.floor(Math.random() * 60) + 20}%`,
+              height: `${20 + (i * 7) % 60}%`,
               animationDelay: `${i * 0.05}s`
             }} 
           />

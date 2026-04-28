@@ -5,37 +5,43 @@ import { z } from "zod";
  * Menentukan hak akses dan skema user profile untuk IUS Platform.
  */
 
-// 1. Tipe Dasar untuk Arsitektur SaaS
-export type PlanType = "user" | "pengelola" | "pemilik" | "investment";
-
-export type RoleType =
-  | "owner"
-  | "staff1"
-  | "staff2"
-  | "staff3"
+// 1. Tipe Dasar untuk Arsitektur SaaS (Disesuaikan dengan Backend UIS-OTAK)
+export type PlanType =
   | "free"
   | "pro"
   | "bisnis"
-  | "enterprise";
+  | "enterprise"
+  | "owner"
+  | "pengelola";
+
+export type RoleType =
+  | "user"
+  | "admin"
+  | "owner"
+  | "pengelola"
+  | "staff1"
+  | "staff2"
+  | "staff3"
+  | "investment";
 
 // 2. Skema User Profile menggunakan Zod
 export const UserProfileSchema = z.object({
-  id: z.string().uuid(),
-  name: z.string().min(3),
+  id: z.number(), // Backend menggunakan integer ID
+  name: z.string().nullable(),
   email: z.string().email(),
-  plan: z.enum(["user", "pengelola", "pemilik", "investment"]),
+  plan: z.enum(["free", "pro", "bisnis", "enterprise", "owner", "pengelola"]),
   role: z.enum([
+    "user",
+    "admin",
     "owner",
+    "pengelola",
     "staff1",
     "staff2",
     "staff3",
-    "free",
-    "pro",
-    "bisnis",
-    "enterprise",
+    "investment",
   ]),
-  investmentReturnPercentage: z.number(),
-  telegramId: z.string().optional(),
+  returnPercentage: z.number().optional(),
+  telegramId: z.string().nullable().optional(),
 });
 
 export type UserProfile = z.infer<typeof UserProfileSchema>;
@@ -44,11 +50,11 @@ export type UserProfile = z.infer<typeof UserProfileSchema>;
  * Logika Auto-Upgrade: Menaikkan tier user secara otomatis berdasarkan performa investasi.
  */
 export function evaluateUserTier(user: UserProfile): UserProfile {
-  // Jika user plan adalah 'user' dan return investasi > 11.5%
-  if (user.plan === "user" && user.investmentReturnPercentage > 11.5) {
+  // Jika user plan adalah 'free' dan return investasi > 11.5%
+  if (user.plan === "free" && (user.returnPercentage ?? 0) > 11.5) {
     return {
       ...user,
-      role: "enterprise", // Naik ke role tertinggi secara otomatis
+      role: "investment", // Naik ke role tertinggi secara otomatis
     };
   }
   return user;
@@ -56,23 +62,23 @@ export function evaluateUserTier(user: UserProfile): UserProfile {
 
 /**
  * Fungsi Otorisasi: Mengecek izin pengelolaan user.
- * @param currentUserPlan - Plan dari user yang sedang login.
+ * @param currentUserRole - Role dari user yang sedang login.
  * @param action - Aksi yang ingin dilakukan.
  */
 export function canManageUsers(
-  currentUserPlan: PlanType,
-  action: "read" | "update" | "create" | "delete"
+  currentUserRole: RoleType,
+  action: "read" | "update" | "create" | "delete",
 ): boolean {
-  // Pemilik memiliki akses penuh (Full Access)
-  if (currentUserPlan === "pemilik") {
+  // Pemilik/Owner memiliki akses penuh (Full Access)
+  if (currentUserRole === "owner") {
     return true;
   }
 
   // Pengelola hanya diizinkan membaca dan memperbarui data
-  if (currentUserPlan === "pengelola") {
+  if (currentUserRole === "pengelola") {
     return action === "read" || action === "update";
   }
 
-  // Selain itu (user/investment) dilarang mengelola user
+  // Selain itu dilarang mengelola user
   return false;
 }

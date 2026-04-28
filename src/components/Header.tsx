@@ -44,6 +44,17 @@ export function Header() {
       <div className="flex items-center gap-2 relative z-10 w-full max-w-[1400px] mx-auto">
         <div className="flex items-center gap-2">
           <SidebarTrigger className="hover:bg-primary/10 transition-colors" />
+          
+          <div className="hidden lg:flex items-center ml-4 gap-3 px-3 py-1.5 rounded-xl bg-emerald-500/5 border border-emerald-500/10 backdrop-blur-sm">
+             <div className="relative size-2">
+                <div className="absolute inset-0 bg-emerald-500 rounded-full animate-ping opacity-75" />
+                <div className="relative size-2 bg-emerald-500 rounded-full shadow-[0_0_8px_#10b981]" />
+             </div>
+             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500/80">
+                IUS_BRAIN::LIVE
+             </span>
+          </div>
+
           <div className="ml-4 hidden md:flex items-center">
             <div className="h-6 w-[1px] bg-border/60 mx-2 mr-4" />
             <NavigationMenu>

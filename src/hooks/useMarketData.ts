@@ -1,22 +1,25 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { marketService } from "@/services/marketService";
+import { ScreenerItem, SystemHealthResponse } from "@/types/api";
 
-export interface StockData {
-  ticker: string;
-  price: number;
-  change: number;
-  volumeSpike: string;
-  sentiment: "Positive" | "Negative";
-}
+export interface StockData extends ScreenerItem {}
 
 export interface MarketStats {
   ihsg: { value: string; change: string; up: boolean };
+  majorIndices: { code: string; value: string; change: string; up: boolean }[];
   activeSignals: number;
   winRate: string;
   topGainerSentiment: string;
+  compositeSentiment: string;
+  avgRSI: number;
+  telemetry: SystemHealthResponse | null;
+  synopsis: string;
 }
 
-export function useMarketData() {
+/**
+ * Hook to manage market intelligence data fetching
+ */
+export function useMarketData(tier?: number) {
   const [data, setData] = useState<{ stocks: StockData[]; stats: MarketStats } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -24,43 +27,64 @@ export function useMarketData() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Simulasi fetch data dari API (nantinya akan ke endpoint Python)
-        // const response = await axios.get("/api/market-hub");
+        setLoading(true);
         
-        // Data Dummy untuk sementara
-        const dummyStocks: StockData[] = [
-          { ticker: "BBCA", price: 10150, change: 0.75, volumeSpike: "1.2x", sentiment: "Positive" },
-          { ticker: "BBRI", price: 4780, change: -1.2, volumeSpike: "0.8x", sentiment: "Negative" },
-          { ticker: "TLKM", price: 3820, change: 1.5, volumeSpike: "2.1x", sentiment: "Positive" },
-          { ticker: "ASII", price: 5125, change: -0.5, volumeSpike: "1.0x", sentiment: "Negative" },
-          { ticker: "GOTO", price: 68, change: 4.2, volumeSpike: "3.5x", sentiment: "Positive" },
-          { ticker: "BMRI", price: 6950, change: 0.3, volumeSpike: "0.9x", sentiment: "Positive" },
-          { ticker: "AMMN", price: 8900, change: -2.1, volumeSpike: "1.5x", sentiment: "Negative" },
-          { ticker: "BBNI", price: 5200, change: 0.1, volumeSpike: "0.7x", sentiment: "Positive" },
-          { ticker: "UNVR", price: 3120, change: -0.8, volumeSpike: "1.1x", sentiment: "Negative" },
-          { ticker: "BRPT", price: 980, change: 5.6, volumeSpike: "4.2x", sentiment: "Positive" },
-        ];
+        // 1. Fetch data with graceful error handling per request
+        const [screenerData, radarData, systemHealth, smartScreener, brainSynopsis] = await Promise.all([
+          (tier ? marketService.getTieredScreener(tier) : marketService.getScreener()).catch(() => []),
+          marketService.getRadar().catch(() => ({ market_indices: [] })),
+          marketService.getSystemHealth().catch(() => null),
+          marketService.getSmartScreener().catch(() => []),
+          marketService.getSynopsis().catch(() => "")
+        ]);
 
-        const dummyStats: MarketStats = {
-          ihsg: { value: "7,125.40", change: "+0.45%", up: true },
-          activeSignals: 24,
-          winRate: "72.8%",
+        // 2. Map Screener data to StockData
+        const stocks: StockData[] = Array.isArray(screenerData) ? screenerData : [];
+
+        // 3. Extract IHSG and Major Indices from Radar
+        const ihsgIdx = radarData.market_indices?.find(idx => idx.IndexCode === "IHSG");
+        const majorIndices = (radarData.market_indices || [])
+          .filter(idx => idx.IndexCode !== "IHSG")
+          .map(idx => ({
+            code: idx.IndexCode,
+            value: idx.Current,
+            change: idx.Percent,
+            up: !String(idx.Change ?? "0").startsWith("-")
+          }));
+        
+        // 4. Derived Stats (Using real data where available)
+        const stats: MarketStats = {
+          ihsg: { 
+            value: ihsgIdx?.Current || "0,000.00", 
+            change: ihsgIdx?.Percent || "0.00%", 
+            up: !String(ihsgIdx?.Change ?? "0").startsWith("-") 
+          },
+          majorIndices: majorIndices,
+          activeSignals: stocks.filter(s => s.signal.includes("BUY")).length,
+          winRate: `${stocks.length > 0 ? (stocks.reduce((acc, s) => acc + s.win_rate_prob, 0) / stocks.length * 100).toFixed(1) : "0"}%`,
           topGainerSentiment: "Sektor Perbankan",
+          compositeSentiment: smartScreener.length > 0 ? smartScreener[0].label : "NEUTRAL",
+          avgRSI: stocks.length > 0 ? (stocks.reduce((acc, s) => acc + s.rsi, 0) / stocks.length) : 0,
+          telemetry: systemHealth,
+          synopsis: brainSynopsis,
         };
 
-        // Simulasi network delay
-        await new Promise((resolve) => setTimeout(resolve, 800));
-        
-        setData({ stocks: dummyStocks, stats: dummyStats });
+        setData({ stocks, stats });
       } catch (err) {
-        setError("Gagal memuat data pasar");
+        console.error("Market Data Hub Error:", err);
+        setError("Gagal sinkronisasi dengan UIS-OTAK Core");
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, []);
+    
+    // Refresh every 5 minutes
+    const interval = setInterval(fetchData, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [tier]);
 
   return { data, loading, error };
 }
+

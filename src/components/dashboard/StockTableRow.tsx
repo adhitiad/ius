@@ -61,19 +61,20 @@ export function StockTableRow({ initialData, index }: StockTableRowProps) {
       <td className="px-6 py-4 text-center">
         <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-[11px] font-medium text-zinc-400">
           <Activity className="w-3 h-3 text-blue-500" />
-          {initialData.volumeSpike}
+          {initialData.spike_ratio.toFixed(1)}x
         </div>
       </td>
       <td className="px-6 py-4 text-center">
         <span className={cn(
           "inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black tracking-tighter uppercase",
-          initialData.sentiment === "Positive" 
+          initialData.bandar_label.toLowerCase().includes("accum") || initialData.signal.includes("BUY")
             ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" 
             : "bg-rose-500/10 text-rose-400 border border-rose-500/20"
         )}>
-          {initialData.sentiment}
+          {initialData.bandar_label || initialData.signal}
         </span>
       </td>
     </tr>
   );
 }
+

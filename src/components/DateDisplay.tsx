@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 
 // Dynamic import dengan ssr: false agar komponen hanya dirender di client side

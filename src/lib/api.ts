@@ -57,8 +57,10 @@ api.interceptors.response.use(
         document.cookie = `auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict${isSecure ? "; Secure" : ""}`;
         // Dispatch event untuk sinkronisasi state auth store
         window.dispatchEvent(new Event("auth:logout"));
-        // Redirect to login page
-        window.location.href = "/login?expired=true";
+        // Redirect only if not on landing page
+        if (window.location.pathname !== "/") {
+          window.location.href = "/login?expired=true";
+        }
       }
     }
     return Promise.reject(error);

@@ -1,6 +1,4 @@
 import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
-import { saveUser, findUserByEmail } from "@/lib/db";
 import { registerSchema } from "@/lib/validations/auth";
 import { z } from "zod";
 
@@ -71,23 +69,32 @@ export async function POST(req: Request) {
     const body = await req.json();
     const validatedData = registerSchema.parse(body);
 
-    const existingUser = await findUserByEmail(validatedData.email);
-    if (existingUser) {
+    // Call FastAPI backend instead of local DB
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    const apiBaseUrl = backendUrl.endsWith("/api/v1") ? backendUrl : `${backendUrl.replace(/\/$/, "")}/api/v1`;
+    
+    const response = await fetch(`${apiBaseUrl}/auth/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: validatedData.name,
+        email: validatedData.email,
+        password: validatedData.password
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      // Return error from backend (e.g. Email already registered)
       return NextResponse.json(
-        { message: "Email sudah terdaftar" },
-        { status: 400 }
+        { message: result.detail || result.message || "Gagal mendaftar ke server utama" },
+        { status: response.status }
       );
     }
 
-    const hashedPassword = await bcrypt.hash(validatedData.password, 10);
-    const newUser = await saveUser({
-      name: validatedData.name,
-      email: validatedData.email,
-      password: hashedPassword,
-    });
-
     return NextResponse.json(
-      { message: "Registrasi berhasil", user: { id: newUser.id, name: newUser.name, email: newUser.email } },
+      { message: "Registrasi berhasil", user: result },
       { status: 201 }
     );
   } catch (error: any) {
