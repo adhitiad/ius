@@ -47,15 +47,19 @@ export const marketService = {
     return data.map(item => {
       return {
         ticker: item.ticker ?? "",
-        price: item.price ?? 0,
-        change: item.change ?? 0,
-        ema_200: item.ema_200 ?? 0,
-        rsi: item.rsi ?? 0,
-        win_rate_prob: item.win_rate_prob ?? item.win_rate ?? 0,
-        bandar_score: item.bandar_score ?? 0,
-        bandar_label: item.bandar_label ?? item.bandar_activity ?? "NEUTRAL",
+        price: item.technical_indicators?.last_close ?? item.price ?? 0,
+        change: item.technical_indicators?.rsi ?? 0, // Placeholder if no change %
+        ema_200: item.technical_indicators?.ma50 ?? 0,
+        rsi: item.technical_indicators?.rsi ?? 0,
+        win_rate_prob: item.confidence ?? item.win_rate_prob ?? 0,
+        bandar_score: item.logic_score?.foreign_accumulation ? item.logic_score.foreign_accumulation * 100 : item.bandar_score ?? 0,
+        bandar_label: item.intuition_score?.market_sentiment ?? item.bandar_label ?? "NEUTRAL",
         spike_ratio: item.spike_ratio ?? 0,
-        signal: item.signal ?? (item.win_rate > 0.6 ? "BUY" : "HOLD"),
+        signal: item.recommendation ?? item.signal ?? "HOLD",
+        tp: item.trade_plan?.tp ?? undefined,
+        sl: item.trade_plan?.sl ?? undefined,
+        winrate: item.trade_plan?.winrate ?? undefined,
+        order_type: item.trade_plan?.order_type ?? undefined,
       };
     });
   },
@@ -173,15 +177,19 @@ export const marketService = {
     return data.map(item => {
       return {
         ticker: item.ticker ?? "",
-        price: item.price ?? 0,
-        change: item.change ?? 0,
-        ema_200: item.ema_200 ?? 0,
-        rsi: item.rsi ?? 0,
-        win_rate_prob: item.win_rate_prob ?? item.win_rate ?? 0,
-        bandar_score: item.bandar_score ?? 0,
-        bandar_label: item.bandar_label ?? item.bandar_activity ?? "NEUTRAL",
+        price: item.technical_indicators?.last_close ?? item.price ?? 0,
+        change: item.technical_indicators?.change ?? item.change ?? 0,
+        ema_200: item.technical_indicators?.ma50 ?? item.ema_200 ?? 0,
+        rsi: item.technical_indicators?.rsi ?? item.rsi ?? 0,
+        win_rate_prob: item.confidence ?? item.win_rate_prob ?? 0,
+        bandar_score: item.logic_score?.foreign_accumulation ? item.logic_score.foreign_accumulation * 100 : item.bandar_score ?? 0,
+        bandar_label: item.intuition_score?.market_sentiment ?? item.bandar_label ?? "NEUTRAL",
         spike_ratio: item.spike_ratio ?? 0,
-        signal: item.signal ?? (item.win_rate > 0.6 ? "BUY" : "HOLD"),
+        signal: item.recommendation ?? item.signal ?? "HOLD",
+        tp: item.trade_plan?.tp ?? undefined,
+        sl: item.trade_plan?.sl ?? undefined,
+        winrate: item.trade_plan?.winrate ?? undefined,
+        order_type: item.trade_plan?.order_type ?? undefined,
       };
     });
   },
