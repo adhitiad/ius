@@ -45,17 +45,21 @@ export const marketService = {
     const data: any[] = Array.isArray(raw) ? raw : [];
     // Ensure all items have required properties
     return data.map(item => {
+      // mapping "BUY/BULLISH" etc snippet
+      const signalRaw = item.action ?? "HOLD";
+      const signalClean = signalRaw.includes("/") ? signalRaw.split("/")[0] : signalRaw;
+      
       return {
         ticker: item.ticker ?? "",
-        price: item.technical_indicators?.last_close ?? item.price ?? 0,
-        change: item.technical_indicators?.rsi ?? 0, // Placeholder if no change %
-        ema_200: item.technical_indicators?.ma50 ?? 0,
-        rsi: item.technical_indicators?.rsi ?? 0,
+        price: item.trade_plan?.entry ?? item.price ?? 0,
+        change: item.change ?? 0, 
+        ema_200: item.ema_200 ?? 0,
+        rsi: item.rsi ?? 0,
         win_rate_prob: item.confidence ?? item.win_rate_prob ?? 0,
-        bandar_score: item.logic_score?.foreign_accumulation ? item.logic_score.foreign_accumulation * 100 : item.bandar_score ?? 0,
-        bandar_label: item.intuition_score?.market_sentiment ?? item.bandar_label ?? "NEUTRAL",
+        bandar_score: item.analysis?.foreign_flow === "Accumulation" ? 85 : item.analysis?.foreign_flow === "Distribution" ? 25 : item.bandar_score ?? 50,
+        bandar_label: item.analysis?.foreign_flow ?? item.bandar_label ?? "NETRAL",
         spike_ratio: item.spike_ratio ?? 0,
-        signal: item.recommendation ?? item.signal ?? "HOLD",
+        signal: signalClean,
         tp: item.trade_plan?.tp ?? undefined,
         sl: item.trade_plan?.sl ?? undefined,
         winrate: item.trade_plan?.winrate ?? undefined,
@@ -175,17 +179,20 @@ export const marketService = {
     const raw = response.data?.results ?? response.data?.top_20 ?? response.data;
     const data = Array.isArray(raw) ? raw : [];
     return data.map(item => {
+      const signalRaw = item.action ?? "HOLD";
+      const signalClean = signalRaw.includes("/") ? signalRaw.split("/")[0] : signalRaw;
+
       return {
         ticker: item.ticker ?? "",
-        price: item.technical_indicators?.last_close ?? item.price ?? 0,
-        change: item.technical_indicators?.change ?? item.change ?? 0,
-        ema_200: item.technical_indicators?.ma50 ?? item.ema_200 ?? 0,
-        rsi: item.technical_indicators?.rsi ?? item.rsi ?? 0,
+        price: item.trade_plan?.entry ?? item.price ?? 0,
+        change: item.change ?? 0,
+        ema_200: item.ema_200 ?? 0,
+        rsi: item.rsi ?? 0,
         win_rate_prob: item.confidence ?? item.win_rate_prob ?? 0,
-        bandar_score: item.logic_score?.foreign_accumulation ? item.logic_score.foreign_accumulation * 100 : item.bandar_score ?? 0,
-        bandar_label: item.intuition_score?.market_sentiment ?? item.bandar_label ?? "NEUTRAL",
+        bandar_score: item.analysis?.foreign_flow === "Accumulation" ? 85 : item.analysis?.foreign_flow === "Distribution" ? 25 : item.bandar_score ?? 50,
+        bandar_label: item.analysis?.foreign_flow ?? item.bandar_label ?? "NETRAL",
         spike_ratio: item.spike_ratio ?? 0,
-        signal: item.recommendation ?? item.signal ?? "HOLD",
+        signal: signalClean,
         tp: item.trade_plan?.tp ?? undefined,
         sl: item.trade_plan?.sl ?? undefined,
         winrate: item.trade_plan?.winrate ?? undefined,
@@ -194,4 +201,3 @@ export const marketService = {
     });
   },
 };
-
