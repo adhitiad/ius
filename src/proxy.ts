@@ -2,20 +2,36 @@ import { jwtVerify } from "jose";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-const SECRET_KEY = process.env.JWT_SECRET || process.env.SECRET_KEY;
-if (!SECRET_KEY) {
-  throw new Error("JWT_SECRET or SECRET_KEY environment variable is required");
-}
-const key = new TextEncoder().encode(SECRET_KEY);
-
 const ADMIN_ROLES = new Set(["owner", "pengelola"]);
-const PREMIUM_PLANS = new Set(["bisnis", "enterprise"]);
-const PREMIUM_ROUTES = ["/signals", "/backtester"];
+const PREMIUM_PLANS = new Set([
+  "pro",
+  "bisnis",
+  "enterprise",
+  "owner",
+  "pengelola",
+]);
+const PREMIUM_ROUTES = ["/signals", "/backtester", "/intelligence"];
+const PROTECTED_ROUTES = [
+  "/dashboard",
+  "/admin",
+  "/signals",
+  "/backtester",
+  "/intelligence",
+  "/screener",
+  "/chat",
+  "/settings",
+  "/ticker",
+];
 
 type JwtClaims = {
   role?: string;
   plan?: string;
   exp?: number;
+};
+
+const getJwtKey = () => {
+  const secret = process.env.JWT_SECRET || process.env.SECRET_KEY;
+  return secret ? new TextEncoder().encode(secret) : null;
 };
 
 const clearCookieAndRedirect = (url: URL) => {
@@ -30,6 +46,7 @@ const isExpired = (claims: JwtClaims) => {
 };
 
 const getClaims = async (token: string): Promise<JwtClaims | null> => {
+  const key = getJwtKey();
   if (!key) {
     return null;
   }
@@ -42,19 +59,16 @@ const getClaims = async (token: string): Promise<JwtClaims | null> => {
   }
 };
 
-/**
- * Next.js Proxy for Route Protection & Gatekeeping
- */
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get("auth_token")?.value;
 
   const isAuthPage =
     pathname.startsWith("/login") || pathname.startsWith("/register");
-  const isProtectedPath =
-    pathname.startsWith("/dashboard") ||
-    pathname.startsWith("/admin") ||
-    PREMIUM_ROUTES.some((route) => pathname.startsWith(route));
+
+  const isProtectedPath = PROTECTED_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`),
+  );
 
   if (!token && isProtectedPath) {
     return NextResponse.redirect(new URL("/login", request.url));
@@ -75,7 +89,7 @@ export async function proxy(request: NextRequest) {
   }
 
   const userRole = claims.role ?? "user";
-  const userPlan = claims.plan ?? "free";
+  const userPlan = (claims.plan ?? "free").toLowerCase();
 
   if (pathname.startsWith("/admin") && !ADMIN_ROLES.has(userRole)) {
     return NextResponse.redirect(
@@ -86,8 +100,9 @@ export async function proxy(request: NextRequest) {
   const isPremiumRoute = PREMIUM_ROUTES.some((route) =>
     pathname.startsWith(route),
   );
+  const isPremiumPlan = PREMIUM_PLANS.has(userPlan);
 
-  if (isPremiumRoute && !PREMIUM_PLANS.has(userPlan)) {
+  if (isPremiumRoute && !isPremiumPlan) {
     return NextResponse.redirect(
       new URL("/pricing?reason=premium_required", request.url),
     );
@@ -105,5 +120,10 @@ export const config = {
     "/admin/:path*",
     "/signals/:path*",
     "/backtester/:path*",
+    "/intelligence/:path*",
+    "/screener/:path*",
+    "/chat/:path*",
+    "/settings/:path*",
+    "/ticker/:path*",
   ],
 };

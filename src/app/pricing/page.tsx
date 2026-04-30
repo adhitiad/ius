@@ -1,24 +1,25 @@
 "use client";
 
-import React from "react";
 import PricingCard from "@/components/pricing/PricingCard";
 import { Sidebar } from "@/components/Sidebar";
+import { type PlanType } from "@/lib/rbac";
+import { cn } from "@/lib/utils";
 import { useMarketStore } from "@/store/useMarketStore";
 import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
 
 const PricingPage = () => {
   const { updateSubscription, user: marketUser } = useMarketStore();
   const router = useRouter();
 
-  const handleUpgrade = (tier: "Basic" | "Pro" | "VIP") => {
+  const handleUpgrade = (tier: PlanType) => {
     updateSubscription(tier);
     router.push("/settings/billing");
   };
 
   const tiers = [
     {
-      tier: "Basic",
+      tier: "free" as const,
+      displayName: "Basic",
       price: "Free",
       description: "Ideal for beginners exploring market insights with basic scanning.",
       features: [
@@ -27,11 +28,12 @@ const PricingPage = () => {
         "Basic Technical Indicators",
         "Community Support",
       ],
-      buttonText: marketUser?.subscription?.tier === "Basic" ? "Current Plan" : "Get Started",
+      buttonText: marketUser?.subscription?.tier === "free" ? "Current Plan" : "Get Started",
       variant: "basic" as const,
     },
     {
-      tier: "Pro",
+      tier: "pro" as const,
+      displayName: "Pro",
       price: "IDR 149k",
       description: "Most popular for active traders who need advanced AI signals.",
       features: [
@@ -41,22 +43,27 @@ const PricingPage = () => {
         "Volume Spikes Alerts",
         "Priority Email Support",
       ],
-      buttonText: marketUser?.subscription?.tier === "Pro" ? "Current Plan" : "Upgrade to Pro",
+      buttonText: marketUser?.subscription?.tier === "pro" ? "Current Plan" : "Upgrade to Pro",
       variant: "pro" as const,
       isPopular: true,
     },
     {
-      tier: "VIP",
+      tier: "bisnis" as const,
+      displayName: "VIP",
       price: "IDR 499k",
       description: "For institutional traders requiring deep sentiment & customization.",
       features: [
         "Everything in Pro",
         "Custom Sentiment Analysis",
         "Institutional Order Flow",
-        "API Access (Early Access)",
         "24/7 Dedicated Manager",
+        "Top 100+ Stock Ticker",
+        "AI Algorithmic Signals",
+        "Advanced Strategy Backtester",
+        "Volume Spikes Alerts",
+        "Priority Email Support",
       ],
-      buttonText: marketUser?.subscription?.tier === "VIP" ? "Current Plan" : "Go VIP",
+      buttonText: marketUser?.subscription?.tier === "bisnis" ? "Current Plan" : "Go VIP",
       variant: "vip" as const,
     },
   ];
@@ -92,7 +99,8 @@ const PricingPage = () => {
               >
                 <PricingCard
                   {...tier}
-                  onSelect={() => handleUpgrade(tier.tier as any)}
+                  tier={tier.displayName}
+                  onSelect={() => handleUpgrade(tier.tier)}
                 />
               </div>
             ))}

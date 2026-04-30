@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { registerSchema } from "@/lib/validations/auth";
+import { getBackendApiUrl } from "@/lib/backend-url";
 import { z } from "zod";
 
 // PERINGATAN: Rate limiter menggunakan in-memory Map yang TIDAK COCOK untuk lingkungan serverless
@@ -70,8 +71,7 @@ export async function POST(req: Request) {
     const validatedData = registerSchema.parse(body);
 
     // Call FastAPI backend instead of local DB
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-    const apiBaseUrl = backendUrl.endsWith("/api/v1") ? backendUrl : `${backendUrl.replace(/\/$/, "")}/api/v1`;
+    const apiBaseUrl = getBackendApiUrl();
     
     const response = await fetch(`${apiBaseUrl}/auth/register`, {
       method: "POST",

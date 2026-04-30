@@ -14,16 +14,37 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import PaymentModal from "@/components/pricing/PaymentModal";
+import { type PlanType } from "@/lib/rbac";
+
+const PLAN_LABELS: Record<PlanType, string> = {
+  free: "Basic",
+  pro: "Pro",
+  bisnis: "Bisnis",
+  enterprise: "Enterprise",
+  owner: "Owner",
+  pengelola: "Pengelola",
+};
+
+const PLAN_PRICES: Record<PlanType, string> = {
+  free: "Free",
+  pro: "IDR 149k",
+  bisnis: "IDR 499k",
+  enterprise: "Custom",
+  owner: "Custom",
+  pengelola: "Custom",
+};
 
 const BillingPage = () => {
   const { user: marketUser, updateSubscription } = useMarketStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const sub = marketUser?.subscription || {
-    tier: "Basic",
+    tier: "free" as const,
     status: "active",
     expiryDate: null
   };
+  const planLabel = PLAN_LABELS[sub.tier];
+  const planPrice = PLAN_PRICES[sub.tier];
 
   const formateDate = (dateStr: string | null) => {
     if (!dateStr) return "Lifetime";
@@ -39,7 +60,7 @@ const BillingPage = () => {
   };
 
   const confirmUpgrade = () => {
-    updateSubscription(sub.tier as any);
+    updateSubscription(sub.tier);
     setIsModalOpen(false);
     // Add success notification logic here if needed
   };
@@ -70,7 +91,7 @@ const BillingPage = () => {
                   <div>
                     <h2 className="text-gray-400 text-sm font-medium mb-1">Current Plan</h2>
                     <div className="flex items-center gap-3">
-                      <span className="text-3xl font-bold text-white">{sub.tier}</span>
+                      <span className="text-3xl font-bold text-white">{planLabel}</span>
                       <span className="px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-[10px] font-bold uppercase tracking-wider border border-green-500/20">
                         {sub.status}
                       </span>
@@ -187,8 +208,8 @@ const BillingPage = () => {
       <PaymentModal 
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        tier={sub.tier}
-        price={sub.tier === "Basic" ? "Free" : sub.tier === "Pro" ? "IDR 149k" : "IDR 499k"}
+        tier={planLabel}
+        price={planPrice}
         onConfirm={confirmUpgrade}
       />
     </div>

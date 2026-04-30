@@ -11,7 +11,7 @@ interface UserSession {
   returnPercentage: number;
   telegramId?: string;
   subscription?: {
-    tier: "Basic" | "Pro" | "VIP";
+    tier: PlanType;
     status: "active" | "expired" | "none";
     expiryDate: string | null;
   };
@@ -46,7 +46,7 @@ interface MarketState {
   setToken: (token: string | null) => void;
   setLanguage: (lang: "id" | "en") => void;
   setTheme: (theme: "dark" | "light" | "aurora" | "cool") => void;
-  updateSubscription: (tier: "Basic" | "Pro" | "VIP") => void;
+  updateSubscription: (tier: PlanType) => void;
   updatePrices: (newPrices: Record<string, Partial<TickerData>>) => void;
   logout: () => void;
 }

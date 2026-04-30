@@ -1,12 +1,6 @@
-import React, { useState, useEffect } from "react";
-import dynamic from "next/dynamic";
+"use client";
 
-// Dynamic import dengan ssr: false agar komponen hanya dirender di client side
-// Ini menghindari hydration mismatch karena tanggal bergantung pada waktu lokal client
-const DateDisplayClient = dynamic(() => Promise.resolve(DateDisplay), {
-  ssr: false,
-  loading: () => <span>...</span>,
-});
+import { useEffect, useState } from "react";
 
 function DateDisplay() {
   const [currentDate, setCurrentDate] = useState("");
@@ -23,4 +17,4 @@ function DateDisplay() {
   return <span>{currentDate}</span>;
 }
 
-export default DateDisplayClient;
+export default DateDisplay;

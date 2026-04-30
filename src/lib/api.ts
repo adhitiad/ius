@@ -4,7 +4,7 @@ import axios from "axios";
  * Axios instance for UIS-OTAK API
  */
 const normalizeBaseUrl = (url?: string) => {
-  const fallback = "http://localhost:8000/api/v1";
+  const fallback = "/api/backend/api/v1";
   const resolved = (url || fallback).replace(/\/+$/, "");
   return resolved.endsWith("/api/v1") ? resolved : `${resolved}/api/v1`;
 };

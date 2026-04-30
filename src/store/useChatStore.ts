@@ -47,6 +47,27 @@ const calculateTotalUnread = (threads: ChatThread[]) =>
 
 // WebSocket connection
 let ws: WebSocket | null = null;
+const DEFAULT_BACKEND_API_URL = "https://ap1.aiuiso.site/api/v1";
+
+const getWebSocketBaseUrl = () => {
+  const configuredWsUrl = process.env.NEXT_PUBLIC_WS_URL;
+  if (configuredWsUrl) {
+    return configuredWsUrl.replace(/\/+$/, "");
+  }
+
+  const configuredApiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const apiUrl =
+    configuredApiUrl && /^https?:\/\//i.test(configuredApiUrl)
+      ? configuredApiUrl
+      : DEFAULT_BACKEND_API_URL;
+
+  const normalizedApiUrl = apiUrl.replace(/\/+$/, "");
+  const apiBaseUrl = normalizedApiUrl.endsWith("/api/v1")
+    ? normalizedApiUrl
+    : `${normalizedApiUrl}/api/v1`;
+
+  return apiBaseUrl.replace(/^http/i, "ws");
+};
 
 // Helper to get token from storage
 const getToken = (): string | null => {
@@ -92,7 +113,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
       ws.close();
     }
 
-    const wsUrl = `ws://localhost:8000/api/v1/chat/stream?token=${encodeURIComponent(token)}&thread_id=${encodeURIComponent(threadId)}`;
+    const wsBase = getWebSocketBaseUrl();
+    const wsUrl = `${wsBase}/chat/stream?token=${encodeURIComponent(token)}&thread_id=${encodeURIComponent(threadId)}`;
     
     ws = new WebSocket(wsUrl);
 
