@@ -79,9 +79,12 @@ export interface SmartScreenerItem {
 export interface RSIResponse {
   ticker: string;
   rsi: number;
+  current_rsi?: number | null;
   sector_avg_rsi: number;
+  sector_average_rsi?: number;
   status: string;
-  sector: string;
+  sector?: string;
+  period?: number;
 }
 
 export interface MarketSignal {

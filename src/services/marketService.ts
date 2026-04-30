@@ -95,7 +95,13 @@ export const marketService = {
    */
   getTechnicalRSI: async (ticker: string): Promise<RSIResponse> => {
     const response = await api.get<RSIResponse>(`/market/technical/rsi/${ticker}`);
-    return response.data;
+    const data = response.data;
+    return {
+      ...data,
+      rsi: data.rsi ?? data.current_rsi ?? 50,
+      sector_avg_rsi: data.sector_avg_rsi ?? data.sector_average_rsi ?? 50,
+      status: data.status ?? "NEUTRAL",
+    };
   },
 
 

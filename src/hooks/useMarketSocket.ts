@@ -4,7 +4,67 @@ import { useEffect, useRef, useCallback } from "react";
 import { throttle } from "lodash-es";
 import { useMarketStore, TickerData } from "@/store/useMarketStore";
 
-const WS_URL = "wss://stream.binance.com:9443/ws/!ticker@arr";
+const DEFAULT_MARKET_WS_URL = "wss://ap1.aiuiso.site/api/v1/ws/market-stream";
+
+const toNumber = (value: unknown): number | undefined => {
+  if (value === null || value === undefined || value === "") return undefined;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
+};
+
+const getMarketWebSocketUrl = () => {
+  const configuredMarketUrl = process.env.NEXT_PUBLIC_MARKET_WS_URL;
+  if (configuredMarketUrl) {
+    return configuredMarketUrl.replace(/\/+$/, "");
+  }
+
+  const configuredBaseUrl = process.env.NEXT_PUBLIC_WS_URL;
+  if (configuredBaseUrl) {
+    return `${configuredBaseUrl.replace(/\/+$/, "")}/ws/market-stream`;
+  }
+
+  return DEFAULT_MARKET_WS_URL;
+};
+
+const normalizeMarketItem = (item: any): Partial<TickerData> | null => {
+  const symbol = item?.symbol ?? item?.ticker ?? item?.code ?? item?.s;
+  if (!symbol) return null;
+
+  return {
+    symbol: String(symbol).toUpperCase(),
+    price: toNumber(item?.price ?? item?.last_price ?? item?.close ?? item?.current ?? item?.c),
+    change: toNumber(item?.change ?? item?.price_change ?? item?.p),
+    changePercent: toNumber(item?.changePercent ?? item?.change_percent ?? item?.percent ?? item?.P),
+    volume: toNumber(item?.volume ?? item?.v),
+    lastUpdate: toNumber(item?.lastUpdate ?? item?.timestamp ?? item?.E) ?? Date.now(),
+  };
+};
+
+const extractMarketUpdates = (payload: any): Record<string, Partial<TickerData>> => {
+  const updates: Record<string, Partial<TickerData>> = {};
+  const candidate = payload?.data ?? payload?.payload ?? payload?.prices ?? payload?.ticks ?? payload?.items ?? payload;
+  const items = Array.isArray(candidate) ? candidate : [candidate];
+
+  for (const item of items) {
+    if (!item || typeof item !== "object") continue;
+
+    const normalized = normalizeMarketItem(item);
+    if (normalized?.symbol) {
+      updates[normalized.symbol] = normalized;
+      continue;
+    }
+
+    for (const [symbol, value] of Object.entries(item)) {
+      if (!value || typeof value !== "object") continue;
+      const nested = normalizeMarketItem({ symbol, ...(value as Record<string, unknown>) });
+      if (nested?.symbol) {
+        updates[nested.symbol] = nested;
+      }
+    }
+  }
+
+  return updates;
+};
 
 export function useMarketSocket() {
   const updatePrices = useMarketStore((state) => state.updatePrices);
@@ -27,8 +87,9 @@ export function useMarketSocket() {
       return;
     }
 
-    console.log(`Connecting to WebSocket: ${WS_URL}`);
-    const socket = new WebSocket(WS_URL);
+    const marketWsUrl = getMarketWebSocketUrl();
+    console.log(`Connecting to WebSocket: ${marketWsUrl}`);
+    const socket = new WebSocket(marketWsUrl);
     socketRef.current = socket;
 
     socket.onopen = () => {
@@ -44,23 +105,9 @@ export function useMarketSocket() {
       try {
         const data = JSON.parse(event.data);
         
-        // Binance !ticker@arr returns an array of ticker objects
-        if (Array.isArray(data)) {
-          data.forEach((item) => {
-            if (item.s) {
-              const symbol = item.s;
-              bufferRef.current[symbol] = {
-                symbol,
-                price: parseFloat(item.c),
-                change: parseFloat(item.p),
-                changePercent: parseFloat(item.P),
-                volume: parseFloat(item.v),
-                lastUpdate: item.E
-              };
-            }
-          });
-          
-          // Trigger throttled update
+        const updates = extractMarketUpdates(data);
+        if (Object.keys(updates).length > 0) {
+          bufferRef.current = { ...bufferRef.current, ...updates };
           throttledUpdate(bufferRef.current);
           bufferRef.current = {};
         }
