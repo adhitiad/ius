@@ -107,9 +107,9 @@ export async function POST(req: Request) {
     
     // Log spesifik berdasarkan tipe error untuk debugging yang lebih baik
     if (error instanceof z.ZodError) {
-      console.error("[REGISTRATION_ZOD_ERROR] Validation failed:", error.errors);
+      console.error("[REGISTRATION_ZOD_ERROR] Validation failed:", error.issues);
       return NextResponse.json(
-        { message: "Data yang dimasukkan tidak valid", errors: error.errors },
+        { message: "Data yang dimasukkan tidak valid", errors: error.issues },
         { status: 400 }
       );
     }
