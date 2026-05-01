@@ -3,6 +3,7 @@
 import { AgentTerminal } from "@/components/dashboard/AgentTerminal";
 import { DashboardStats } from "@/components/dashboard/DashboardStats";
 import { MarketGauge } from "@/components/dashboard/MarketGauge";
+import { MarketInsightsSection } from "@/components/dashboard/MarketInsights";
 import { MarketRadar } from "@/components/dashboard/MarketRadar";
 import { NeuralPulse } from "@/components/dashboard/NeuralPulse";
 import { NewsTicker } from "@/components/dashboard/NewsTicker";
@@ -11,6 +12,7 @@ import {
   WhaleDetectorTable,
 } from "@/components/dashboard/WhaleDetectorTable";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useMarketData } from "@/hooks/useMarketData";
@@ -56,16 +58,20 @@ const normalizeTicker = (ticker: string) =>
 
 const toWhaleData = (item: any, index: number): WhaleData => {
   const normalizedTicker = normalizeTicker(item.ticker);
-  const bandarPower = item.bandar_score || 0;
-  const signal = item.bandar_label?.toUpperCase() || "NETRAL";
-  const syntheticChange = Number((((bandarPower - 50) / 12) * 1.8).toFixed(2));
+  const bandarPower = Math.round(
+    item.whale_accumulation_score || item.bandar_score || 50,
+  );
+  const signal =
+    item.bandar_activity?.toUpperCase() ||
+    item.bandar_label?.toUpperCase() ||
+    "NETRAL";
 
   return {
     id: `${normalizedTicker}-${index}`,
     ticker: normalizedTicker,
     name: normalizedTicker,
     price: Number(item.price || 0),
-    change: syntheticChange,
+    change: Number(item.change || 0),
     volume: `${(item.spike_ratio || 0).toFixed(1)}x`,
     bandarPower,
     signal: signal as any,
@@ -197,48 +203,55 @@ export default function DashboardPage() {
           <DashboardStats stats={data?.stats} loading={statsLoading} />
         </section>
 
+        {/* Market Intelligence Insights */}
+        <section className="animate-in fade-in slide-in-from-top-6 duration-1000 delay-300">
+          <MarketInsightsSection insights={data?.insights ?? null} />
+        </section>
+
         {/* Bento Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 auto-rows-auto">
           {/* Market Sentiment Gauge */}
-          <div className="lg:col-span-8 p-10 rounded-[3.5rem] bg-gradient-to-br from-white/[0.03] to-transparent border border-white/5 flex flex-col md:flex-row items-center gap-12 overflow-hidden relative group transition-all hover:bg-white/[0.05] shadow-2xl">
-            <MarketGauge
-              value={marketPulse.avgBandarPower}
-              label={marketPulse.sentiment}
-              className="shrink-0 scale-125 group-hover:scale-[1.35] transition-transform duration-1000"
-            />
-            <div className="flex-1 space-y-8 relative z-10 w-full text-center md:text-left">
-              <div className="space-y-2">
-                <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.5em] block">
-                  Sentimen Neural
-                </span>
-                <h3
-                  className={cn(
-                    "text-6xl font-black italic tracking-tighter transition-all duration-700",
-                    marketPulse.sentiment === "BULLISH"
-                      ? "text-emerald-400 drop-shadow-[0_0_15px_rgba(52,211,153,0.3)]"
-                      : marketPulse.sentiment === "BEARISH"
-                        ? "text-rose-400"
-                        : "text-amber-400",
-                  )}
-                >
-                  {marketPulse.sentiment}
-                </h3>
-              </div>
-              <div className="space-y-4">
-                <div className="flex justify-between items-end border-b border-white/5 pb-3">
-                  <span className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">
-                    Kekuatan Akumulasi
+          <Card className="lg:col-span-8 p-0 rounded-[3.5rem] bg-gradient-to-br from-white/[0.03] to-transparent border-white/5 flex flex-col md:flex-row items-center gap-12 overflow-hidden relative group transition-all hover:bg-white/[0.05] shadow-2xl">
+            <CardContent className="flex flex-col md:flex-row items-center gap-12 p-10 w-full">
+              <MarketGauge
+                value={marketPulse.avgBandarPower}
+                label={marketPulse.sentiment}
+                className="shrink-0 scale-125 group-hover:scale-[1.35] transition-transform duration-1000"
+              />
+              <div className="flex-1 space-y-8 relative z-10 w-full text-center md:text-left">
+                <div className="space-y-2">
+                  <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.5em] block">
+                    Sentimen Neural
                   </span>
-                  <span className="text-2xl font-black font-mono text-white tracking-tighter">
-                    {marketPulse.avgBandarPower}%
-                  </span>
+                  <h3
+                    className={cn(
+                      "text-6xl font-black italic tracking-tighter transition-all duration-700",
+                      marketPulse.sentiment === "BULLISH"
+                        ? "text-emerald-400 drop-shadow-[0_0_15px_rgba(52,211,153,0.3)]"
+                        : marketPulse.sentiment === "BEARISH"
+                          ? "text-rose-400"
+                          : "text-amber-400",
+                    )}
+                  >
+                    {marketPulse.sentiment}
+                  </h3>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-end border-b border-white/5 pb-3">
+                    <span className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">
+                      Kekuatan Akumulasi
+                    </span>
+                    <span className="text-2xl font-black font-mono text-white tracking-tighter">
+                      {marketPulse.avgBandarPower}%
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
           {/* Whale Density Card */}
-          <div className="lg:col-span-4 p-10 rounded-[3.5rem] bg-white/[0.02] border border-white/5 flex flex-col justify-between group relative overflow-hidden transition-all hover:bg-white/[0.04]">
+          <Card className="lg:col-span-4 p-10 rounded-[3.5rem] bg-white/[0.02] border-white/5 flex flex-col justify-between group relative overflow-hidden transition-all hover:bg-white/[0.04]">
             <div className="absolute -bottom-10 -right-10 opacity-5 group-hover:opacity-10 transition-all duration-1000">
               <Database className="size-48 rotate-12" />
             </div>
@@ -263,7 +276,7 @@ export default function DashboardPage() {
                 Whale Terdeteksi di Sektor Ini
               </p>
             </div>
-          </div>
+          </Card>
 
           {/* Market Radar */}
           <div className="lg:col-span-12 space-y-8 py-4">

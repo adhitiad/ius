@@ -25,11 +25,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { 
+  AreaChart, 
+  Area, 
+  ResponsiveContainer 
+} from "recharts";
 
 interface DashboardStatsProps {
   stats?: MarketStats;
   loading: boolean;
 }
+
+// Data simulasi untuk tren indeks
+const generateIndexTrend = (isUp: boolean) => {
+  return Array.from({ length: 8 }, (_, i) => ({
+    value: 50 + (isUp ? i * 2 + Math.random() * 5 : -i * 2 + Math.random() * 5)
+  }));
+};
 
 export function DashboardStats({ stats, loading }: DashboardStatsProps) {
   const user = useMarketStore((state) => state.user);
@@ -87,8 +99,17 @@ export function DashboardStats({ stats, loading }: DashboardStatsProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-8 w-full">
         {/* 1. PORTFOLIO PERFORMANCE */}
-        <Card className="md:col-span-6 lg:col-span-4 border-primary/20 bg-gradient-to-br from-primary/10 via-transparent to-transparent rounded-[2.5rem] flex flex-col justify-between group relative overflow-hidden transition-all hover:shadow-[0_0_50px_-12px_rgba(16,185,129,0.3)] border-none ring-1 ring-white/5">
+        <Card className="md:col-span-6 lg:col-span-4 border-primary/20 bg-gradient-to-br from-primary/10 via-transparent to-transparent rounded-[2.5rem] flex flex-col justify-between group relative overflow-hidden transition-all hover:shadow-[0_0_50px_-12px_rgba(16,185,129,0.3)] border-none ring-1 ring-white/5 h-[280px]">
           <div className="absolute -top-12 -right-12 w-48 h-48 bg-primary/10 blur-[80px] rounded-full pointer-events-none group-hover:bg-primary/20 transition-all duration-700" />
+          
+          {/* Portfolio Chart Background */}
+          <div className="absolute inset-0 z-0 opacity-20 group-hover:opacity-30 transition-opacity">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={generateIndexTrend(true)}>
+                <Area type="monotone" dataKey="value" stroke="#10b981" fill="#10b981" strokeWidth={0} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
 
           <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2 relative z-10 p-8">
             <div className="p-4 rounded-2xl bg-primary/10 text-primary border border-primary/20 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
@@ -108,7 +129,7 @@ export function DashboardStats({ stats, loading }: DashboardStatsProps) {
             </div>
           </CardHeader>
 
-          <CardContent className="p-8 pt-0 flex justify-between items-end mt-4">
+          <CardContent className="p-8 pt-0 flex justify-between items-end mt-4 relative z-10">
             <div className="space-y-2">
               <div className="flex items-center gap-3 text-emerald-400 font-black">
                 <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-[11px] flex items-center gap-1.5 shadow-[0_0_15px_rgba(16,185,129,0.1)] rounded-lg px-3 py-1">
@@ -140,7 +161,7 @@ export function DashboardStats({ stats, loading }: DashboardStatsProps) {
         </Card>
 
         {/* 2. MARKET ANALYTICS */}
-        <Card className="md:col-span-3 lg:col-span-4 border-white/5 bg-zinc-950/50 backdrop-blur-md rounded-[2.5rem] flex flex-col justify-between group relative overflow-hidden">
+        <Card className="md:col-span-3 lg:col-span-4 border-white/5 bg-zinc-950/50 backdrop-blur-md rounded-[2.5rem] flex flex-col justify-between group relative overflow-hidden h-[280px]">
           <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2 p-8">
             <div className="p-4 rounded-2xl bg-amber-500/10 text-amber-500 border border-amber-500/20 group-hover:rotate-12 transition-transform">
               <Zap className="w-8 h-8" />
@@ -237,7 +258,7 @@ export function DashboardStats({ stats, loading }: DashboardStatsProps) {
         </Card>
 
         {/* 3. SYSTEM TELEMETRY */}
-        <Card className="md:col-span-3 lg:col-span-4 border-white/5 bg-zinc-950/30 rounded-[2.5rem] flex flex-col justify-between group">
+        <Card className="md:col-span-3 lg:col-span-4 border-white/5 bg-zinc-950/30 rounded-[2.5rem] flex flex-col justify-between group h-[280px]">
           <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2 p-8">
             <div className="p-4 rounded-2xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
               <Cpu className="w-8 h-8 group-hover:scale-110 transition-transform" />
@@ -359,25 +380,31 @@ export function DashboardStats({ stats, loading }: DashboardStatsProps) {
                 key={idx.code}
                 className="p-5 rounded-3xl bg-zinc-950/40 border border-white/5 hover:border-primary/40 transition-all group/idx relative overflow-hidden"
               >
-                <div className="absolute top-0 right-0 p-2 opacity-[0.03] group-hover/idx:opacity-10 transition-opacity">
-                  <Globe className="w-12 h-12" />
+                <div className="absolute inset-0 z-0 opacity-10 group-hover/idx:opacity-20 transition-opacity">
+                   <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={generateIndexTrend(idx.up)}>
+                         <Area type="monotone" dataKey="value" stroke={idx.up ? "#10b981" : "#f43f5e"} fill={idx.up ? "#10b981" : "#f43f5e"} strokeWidth={0} />
+                      </AreaChart>
+                   </ResponsiveContainer>
                 </div>
-                <span className="text-[9px] font-black text-zinc-500 uppercase block mb-2 group-hover/idx:text-primary transition-colors tracking-widest leading-none">
-                  {idx.code}
-                </span>
-                <p className="text-xl font-black text-white mb-2 font-mono tracking-tighter leading-none">
-                  {loading ? "---" : idx.value}
-                </p>
-                <Badge
-                  variant="ghost"
-                  className={cn(
-                    "text-[10px] font-black p-0 h-auto",
-                    idx.up ? "text-emerald-500" : "text-rose-500",
-                  )}
-                >
-                  {idx.up ? "+" : ""}
-                  {idx.change}
-                </Badge>
+                <div className="relative z-10">
+                  <span className="text-[9px] font-black text-zinc-500 uppercase block mb-2 group-hover/idx:text-primary transition-colors tracking-widest leading-none">
+                    {idx.code}
+                  </span>
+                  <p className="text-xl font-black text-white mb-2 font-mono tracking-tighter leading-none">
+                    {loading ? "---" : idx.value}
+                  </p>
+                  <Badge
+                    variant="ghost"
+                    className={cn(
+                      "text-[10px] font-black p-0 h-auto",
+                      idx.up ? "text-emerald-500" : "text-rose-500",
+                    )}
+                  >
+                    {idx.up ? "+" : ""}
+                    {idx.change}
+                  </Badge>
+                </div>
               </div>
             ))}
           </CardContent>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { marketService } from "@/services/marketService";
-import { ScreenerItem, SystemHealthResponse } from "@/types/api";
+import { ScreenerItem, SystemHealthResponse, MarketInsights } from "@/types/api";
 
 export interface StockData extends ScreenerItem {}
 
@@ -16,11 +16,17 @@ export interface MarketStats {
   synopsis: string;
 }
 
+export interface MarketDataState {
+  stocks: StockData[];
+  stats: MarketStats;
+  insights: MarketInsights | null;
+}
+
 /**
  * Hook to manage market intelligence data fetching
  */
 export function useMarketData(tier?: number) {
-  const [data, setData] = useState<{ stocks: StockData[]; stats: MarketStats } | null>(null);
+  const [data, setData] = useState<MarketDataState | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,12 +36,20 @@ export function useMarketData(tier?: number) {
         setLoading(true);
         
         // 1. Fetch data with graceful error handling per request
-        const [screenerData, radarData, systemHealth, smartScreener, brainSynopsis] = await Promise.all([
+        const [
+          screenerData, 
+          radarData, 
+          systemHealth, 
+          smartScreener, 
+          brainSynopsis,
+          insightsData
+        ] = await Promise.all([
           (tier ? marketService.getTieredScreener(tier) : marketService.getScreener()).catch(() => []),
           marketService.getRadar().catch(() => ({ market_indices: [] })),
           marketService.getSystemHealth().catch(() => null),
           marketService.getSmartScreener().catch(() => []),
-          marketService.getSynopsis().catch(() => "")
+          marketService.getSynopsis().catch(() => ""),
+          marketService.getMarketInsights().catch(() => null)
         ]);
 
         // 2. Map Screener data to StockData
@@ -69,7 +83,7 @@ export function useMarketData(tier?: number) {
           synopsis: brainSynopsis,
         };
 
-        setData({ stocks, stats });
+        setData({ stocks, stats, insights: insightsData });
       } catch (err) {
         console.error("Market Data Hub Error:", err);
         setError("Gagal sinkronisasi dengan UIS-OTAK Core");
@@ -87,4 +101,3 @@ export function useMarketData(tier?: number) {
 
   return { data, loading, error };
 }
-

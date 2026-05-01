@@ -11,6 +11,7 @@ import {
   SmartScreenerItem,
   RSIResponse,
   SynopsisResponse,
+  MarketInsights,
 } from "@/types/api";
 
 
@@ -64,6 +65,7 @@ export const marketService = {
         sl: item.trade_plan?.sl ?? undefined,
         winrate: item.trade_plan?.winrate ?? undefined,
         order_type: item.trade_plan?.order_type ?? undefined,
+        whale_accumulation_score: item.whale_accumulation_score ?? 0,
       };
     });
   },
@@ -161,6 +163,19 @@ export const marketService = {
   },
 
   /**
+   * Get intelligence insights (Top Gainers, Losers, Foreign)
+   */
+  getMarketInsights: async (): Promise<MarketInsights | null> => {
+    try {
+      const response = await api.get<MarketInsights>("/market/insights");
+      return response.data;
+    } catch (e) {
+      console.error("Failed to fetch market insights", e);
+      return null;
+    }
+  },
+
+  /**
    * Get comprehensive system health and telemetry
    */
   getSystemHealth: async (): Promise<SystemHealthResponse> => {
@@ -203,6 +218,7 @@ export const marketService = {
         sl: item.trade_plan?.sl ?? undefined,
         winrate: item.trade_plan?.winrate ?? undefined,
         order_type: item.trade_plan?.order_type ?? undefined,
+        whale_accumulation_score: item.whale_accumulation_score ?? 0,
       };
     });
   },

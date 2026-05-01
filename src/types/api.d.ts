@@ -60,6 +60,7 @@ export interface ScreenerItem {
 
   winrate?: string;
   order_type?: string;
+  whale_accumulation_score?: number;
 }
 
 export interface ScreenerResponse {
@@ -192,4 +193,25 @@ export interface RadarResponse {
 
 export interface SynopsisResponse {
   synopsis: string;
+}
+
+export interface InsightMovers {
+  ticker: string;
+  change: number;
+  change_p: number;
+  price: number;
+}
+
+export interface InsightForeign {
+  ticker: string;
+  foreign_net: number;
+  price: number;
+}
+
+export interface MarketInsights {
+  top_gainers: InsightMovers[];
+  top_losers: InsightMovers[];
+  top_value: InsightMovers[];
+  top_foreign: InsightForeign[];
+  last_update: string;
 }
