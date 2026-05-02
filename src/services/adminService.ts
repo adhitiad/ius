@@ -6,6 +6,8 @@ import {
   UserPlan,
   UserProfile,
   UserRole,
+  SystemConfig,
+  SystemConfigUpdate,
 } from "@/types/api";
 
 const normalizeUserProfile = (user: ApiUserProfile): UserProfile => ({
@@ -64,10 +66,32 @@ export const adminService = {
   },
 
   /**
+   * Get all system configurations (Owner only)
+   */
+  getAllConfigs: async (): Promise<SystemConfig[]> => {
+    const response = await api.get<SystemConfig[]>("/admin/config");
+    return response.data;
+  },
+
+  /**
+   * Update a system configuration (Owner only)
+   */
+  updateConfig: async (
+    key: string,
+    data: SystemConfigUpdate
+  ): Promise<SystemConfig> => {
+    const response = await api.put<SystemConfig>(`/admin/config/${key}`, data);
+    return response.data;
+  },
+
+  /**
    * Get infrastructure telemetry including CPU/RAM + cloud dependency status.
    */
-  getSystemHealth: async (): Promise<SystemHealthResponse> => {
-    const response = await api.get<SystemHealthResponse>("/system/health");
+  /**
+   * Get recent Telegram updates to find Chat IDs.
+   */
+  getTelegramUpdates: async (): Promise<{ chat_ids: { name: string; id: string; type: string }[] }> => {
+    const response = await api.get("/admin/telegram/updates");
     return response.data;
   },
 };

@@ -1,5 +1,6 @@
 "use client";
 
+import { ConfigManagement } from "@/components/admin/ConfigManagement";
 import { ExportButtonGroup } from "@/components/admin/ExportButtonGroup";
 import { SystemTelemetry } from "@/components/admin/SystemTelemetry";
 import { UserManagementTable } from "@/components/admin/UserManagementTable";
@@ -246,6 +247,9 @@ export default function AdminPage() {
 
         {/* Global System Telemetry */}
         <SystemTelemetry />
+
+        {/* System Configuration (Telegram, Bot IDs, etc) */}
+        <ConfigManagement />
 
         {/* Footer Accent */}
         <div className="pt-12 pb-6 text-center">

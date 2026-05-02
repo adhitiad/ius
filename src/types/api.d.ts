@@ -220,3 +220,22 @@ export interface MarketInsights {
   top_foreign: InsightForeign[];
   last_update: string;
 }
+
+export interface SystemConfig {
+  id: number;
+  key: string;
+  value: string;
+  description?: string;
+  updated_at: string;
+}
+
+export interface SystemConfigUpdate {
+  value?: string;
+  description?: string;
+}
+
+export interface SystemConfigCreate {
+  key: string;
+  value: string;
+  description?: string;
+}

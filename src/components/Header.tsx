@@ -47,17 +47,21 @@ export function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const isAdmin = authUser?.role === "owner" || authUser?.role === "pengelola";
+
   const navLinks = [
     { title: t.navigation.dashboard, href: "/dashboard" },
     { title: t.navigation.intelligence, href: "/intelligence", icon: Brain },
     { title: t.navigation.screener, href: "/screener" },
     { title: t.navigation.security_vault, href: "/security", icon: Shield },
+    ...(isAdmin ? [{ title: "Admin", href: "/admin", icon: Settings }] : []),
   ];
 
   // Helper to safely access auth translations
   const authT = (t as any).auth || {
     premium_member: "Premium Member",
     logout: "Logout",
+    admin_panel: "Admin Panel",
   };
 
   return (
@@ -234,12 +238,14 @@ export function Header() {
                     icon: User,
                     color: "text-blue-400",
                   },
-                  {
-                    title: t.navigation.settings,
-                    href: "/settings/profile",
-                    icon: Settings,
-                    color: "text-zinc-400",
-                  },
+                  ...(isAdmin ? [
+                    {
+                      title: "Admin Control",
+                      href: "/admin",
+                      icon: Settings,
+                      color: "text-amber-400",
+                    }
+                  ] : []),
                   {
                     title: t.navigation.security_vault,
                     href: "/security",
