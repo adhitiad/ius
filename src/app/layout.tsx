@@ -11,6 +11,7 @@ import MarketDataProvider from "@/components/MarketDataProvider";
 import Providers from "@/components/Providers";
 import { Toaster } from "sonner";
 import { TelegramOnboarding } from "@/components/modals/TelegramOnboarding";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
@@ -99,6 +100,7 @@ export default function RootLayout({
           </Providers>
           <TelegramOnboarding />
           <Toaster position="bottom-right" richColors theme="dark" closeButton />
+          <SpeedInsights />
       </body>
     </html>
   );
