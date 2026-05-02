@@ -2,18 +2,13 @@ import type { Metadata } from "next";
 import { Inter, Outfit, Geist } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import { AppSidebar } from "@/components/AppSidebar";
-import { Header } from "@/components/Header";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { BottomNav } from "@/components/BottomNav";
-import ThemeHandler from "@/components/ThemeHandler";
 import MarketDataProvider from "@/components/MarketDataProvider";
 import Providers from "@/components/Providers";
 import { Toaster } from "sonner";
 import { TelegramOnboarding } from "@/components/modals/TelegramOnboarding";
+import LanguageHandler from "@/components/LanguageHandler";
 
-
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 const inter = Inter({
   subsets: ["latin"],
@@ -89,10 +84,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" suppressHydrationWarning className="dark">
+    <html lang="id" suppressHydrationWarning>
       <body className={cn(inter.variable, outfit.variable, geist.variable, "min-h-screen bg-[#020203] font-sans antialiased text-zinc-400 overflow-x-hidden")}>
-          <ThemeHandler />
           <Providers>
+            <LanguageHandler />
             <MarketDataProvider>
               {children}
             </MarketDataProvider>
