@@ -54,7 +54,9 @@ export function MarketInsightsSection({ insights, loading }: MarketInsightsSecti
                 <ArrowUpRight className="size-5 text-emerald-500" />
               </div>
               <div>
-                <CardTitle className="font-black italic tracking-tighter text-xl">Saham Terkuat</CardTitle>
+                <CardTitle className="font-black italic tracking-tighter text-xl">
+                  <h2>Saham Terkuat</h2>
+                </CardTitle>
                 <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Kenaikan Harga Hari Ini</p>
               </div>
             </div>
@@ -102,7 +104,9 @@ export function MarketInsightsSection({ insights, loading }: MarketInsightsSecti
                 <ArrowDownRight className="size-5 text-rose-500" />
               </div>
               <div>
-                <CardTitle className="font-black italic tracking-tighter text-xl">Saham Terlemah</CardTitle>
+                <CardTitle className="font-black italic tracking-tighter text-xl">
+                  <h2>Saham Terlemah</h2>
+                </CardTitle>
                 <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Penurunan Harga Hari Ini</p>
               </div>
             </div>
@@ -150,7 +154,9 @@ export function MarketInsightsSection({ insights, loading }: MarketInsightsSecti
                 <Landmark className="size-5 text-blue-500" />
               </div>
               <div>
-                <CardTitle className="font-black italic tracking-tighter text-xl">Akumulasi Bandar</CardTitle>
+                <CardTitle className="font-black italic tracking-tighter text-xl">
+                  <h2>Akumulasi Bandar</h2>
+                </CardTitle>
                 <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Aliran Dana Asing Tertinggi</p>
               </div>
             </div>

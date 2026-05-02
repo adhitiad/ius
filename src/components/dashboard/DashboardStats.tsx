@@ -76,9 +76,9 @@ export function DashboardStats({ stats, loading }: DashboardStatsProps) {
               <Activity className="size-5 animate-pulse" />
             </div>
             <div>
-              <h3 className="text-xs font-black uppercase tracking-[0.4em] text-white">
+              <h2 className="text-xs font-black uppercase tracking-[0.4em] text-white">
                 Sinopsis Neural
-              </h3>
+              </h2>
               <p className="text-[10px] font-black text-emerald-500/80 uppercase tracking-widest mt-1 italic">
                 {stats?.synopsis ||
                   "Sinkronisasi pola kognitif pasar sedang berlangsung..."}

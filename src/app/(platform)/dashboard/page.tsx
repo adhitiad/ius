@@ -223,7 +223,7 @@ export default function DashboardPage() {
                   <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.5em] block">
                     Sentimen Neural
                   </span>
-                  <h3
+                  <h2
                     className={cn(
                       "text-6xl font-black italic tracking-tighter transition-all duration-700",
                       marketPulse.sentiment === "BULLISH"
@@ -234,7 +234,7 @@ export default function DashboardPage() {
                     )}
                   >
                     {marketPulse.sentiment}
-                  </h3>
+                  </h2>
                 </div>
                 <div className="space-y-4">
                   <div className="flex justify-between items-end border-b border-white/5 pb-3">
@@ -260,9 +260,9 @@ export default function DashboardPage() {
                 Node Utama
               </span>
               <div className="flex items-baseline gap-3">
-                <h3 className="text-8xl font-black text-white tracking-tighter leading-none">
+                <h2 className="text-8xl font-black text-white tracking-tighter leading-none">
                   {marketPulse.whaleCount}
-                </h3>
+                </h2>
                 <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
                   <div className="size-1 bg-emerald-500 rounded-full animate-pulse" />
                   <span className="text-[8px] font-black text-emerald-500 uppercase tracking-widest">

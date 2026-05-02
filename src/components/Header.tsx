@@ -43,7 +43,7 @@ export function Header() {
 
       <div className="flex items-center gap-2 relative z-10 w-full max-w-[1400px] mx-auto">
         <div className="flex items-center gap-2">
-          <SidebarTrigger className="hover:bg-primary/10 transition-colors" />
+          <SidebarTrigger className="hover:bg-primary/10 transition-colors" aria-label="Buka Sidebar" />
           
           <div className="hidden lg:flex items-center ml-4 gap-3 px-3 py-1.5 rounded-xl bg-emerald-500/5 border border-emerald-500/10 backdrop-blur-sm">
              <div className="relative size-2">
@@ -125,7 +125,7 @@ export function Header() {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-10 w-10 p-0 rounded-xl overflow-hidden bg-gradient-to-br from-secondary to-secondary/50 border border-border/40 hover:border-primary/30 transition-all duration-300 shadow-sm">
+              <Button variant="ghost" className="relative h-10 w-10 p-0 rounded-xl overflow-hidden bg-gradient-to-br from-secondary to-secondary/50 border border-border/40 hover:border-primary/30 transition-all duration-300 shadow-sm" aria-label="Profil Pengguna">
                 <div className="flex h-full w-full items-center justify-center bg-background/20 backdrop-blur-sm">
                   <User className="h-5 w-5 text-primary/80" />
                 </div>

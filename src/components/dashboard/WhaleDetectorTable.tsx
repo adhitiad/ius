@@ -297,13 +297,22 @@ export function WhaleDetectorTable({ data, loading }: WhaleDetectorTableProps) {
           {table.getRowModel().rows.map((row) => (
             <TableRow
               key={row.id}
+              role="button"
+              tabIndex={0}
+              aria-label={`Lihat detail untuk ${row.original.ticker}`}
               onClick={() => handleRowClick(row.original)}
-              className="group hover:bg-emerald-500/[0.03] cursor-pointer transition-all duration-700 border-b border-white/5 last:border-0 relative"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  handleRowClick(row.original);
+                }
+              }}
+              className="group hover:bg-emerald-500/[0.03] cursor-pointer transition-all duration-700 border-b border-white/5 last:border-0 relative outline-none focus-visible:bg-emerald-500/10 focus-visible:ring-1 focus-visible:ring-primary/50"
             >
               {row.getVisibleCells().map((cell) => (
                 <TableCell
                   key={cell.id}
-                  className="px-10 py-10 transition-all group-hover:translate-x-2 duration-700 h-auto"
+                  className="px-10 py-10 transition-all group-hover:translate-x-2 group-focus-visible:translate-x-2 duration-700 h-auto"
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </TableCell>
