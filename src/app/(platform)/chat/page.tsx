@@ -4,9 +4,14 @@ import { ChatList } from "@/components/chat/ChatList";
 import { ChatRoom } from "@/components/chat/ChatRoom";
 import { cn } from "@/lib/utils";
 import { useChatStore } from "@/store/useChatStore";
+import { useEffect } from "react";
 
 export default function ChatPage() {
-  const { activeThreadId } = useChatStore();
+  const { activeThreadId, fetchThreads } = useChatStore();
+
+  useEffect(() => {
+    fetchThreads();
+  }, []);
 
   return (
     <div className="flex h-[calc(100vh-4rem)] overflow-hidden bg-background">

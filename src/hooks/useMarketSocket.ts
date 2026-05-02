@@ -27,21 +27,39 @@ const getMarketWebSocketUrl = () => {
 };
 
 const normalizeMarketItem = (item: any): Partial<TickerData> | null => {
-  const symbol = item?.symbol ?? item?.ticker ?? item?.code ?? item?.s;
+  // Cek jika ini adalah format baru yang dibungkus metadata
+  const isWrapped = item?.ticker && item?.data && item?.metadata;
+  const data = isWrapped ? item.data : item;
+  const metadata = isWrapped ? item.metadata : null;
+
+  const symbol = data?.symbol ?? data?.ticker ?? data?.code ?? data?.s ?? item?.ticker;
   if (!symbol) return null;
 
   return {
     symbol: String(symbol).toUpperCase(),
-    price: toNumber(item?.price ?? item?.last_price ?? item?.close ?? item?.current ?? item?.c),
-    change: toNumber(item?.change ?? item?.price_change ?? item?.p),
-    changePercent: toNumber(item?.changePercent ?? item?.change_percent ?? item?.percent ?? item?.P),
-    volume: toNumber(item?.volume ?? item?.v),
-    lastUpdate: toNumber(item?.lastUpdate ?? item?.timestamp ?? item?.E) ?? Date.now(),
+    price: toNumber(data?.price ?? data?.last_price ?? data?.close ?? data?.current ?? data?.c),
+    change: toNumber(data?.change ?? data?.price_change ?? data?.p),
+    changePercent: toNumber(data?.changePercent ?? data?.change_percent ?? data?.percent ?? data?.P),
+    volume: toNumber(data?.volume ?? data?.v),
+    lastUpdate: toNumber(data?.lastUpdate ?? data?.timestamp ?? data?.E) ?? Date.now(),
+    source: metadata?.source,
+    isFallback: metadata?.is_fallback,
+    ingestedAt: metadata?.ingested_at,
   };
 };
 
 const extractMarketUpdates = (payload: any): Record<string, Partial<TickerData>> => {
   const updates: Record<string, Partial<TickerData>> = {};
+  
+  // Deteksi format tunggal (wrapped) vs batch
+  if (payload?.ticker && payload?.data && payload?.metadata) {
+    const normalized = normalizeMarketItem(payload);
+    if (normalized?.symbol) {
+      updates[normalized.symbol] = normalized;
+      return updates;
+    }
+  }
+
   const candidate = payload?.data ?? payload?.payload ?? payload?.prices ?? payload?.ticks ?? payload?.items ?? payload;
   const items = Array.isArray(candidate) ? candidate : [candidate];
 

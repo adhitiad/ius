@@ -57,6 +57,8 @@ export interface ScreenerItem {
   spike_ratio: number;
   signal: string;
   sl?: number;
+  source?: string;
+  is_fallback?: boolean;
 
   winrate?: string;
   order_type?: string;
@@ -181,6 +183,8 @@ export interface MarketIndex {
   Percent: string;
   Current: string;
   Time: string;
+  source?: string;
+  is_fallback?: boolean;
 }
 
 export interface RadarResponse {

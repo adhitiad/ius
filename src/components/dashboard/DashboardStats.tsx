@@ -348,9 +348,16 @@ export function DashboardStats({ stats, loading }: DashboardStatsProps) {
                   Matriks{" "}
                   <span className="text-primary italic">IDX Vektor</span>
                 </CardTitle>
-                <CardDescription className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em] mt-1">
-                  Infrastruktur Analitik Real-Time
-                </CardDescription>
+                <div className="flex items-center gap-2 mt-1">
+                  <CardDescription className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em]">
+                    Infrastruktur Analitik Real-Time
+                  </CardDescription>
+                  {stats?.ihsg.isFallback && (
+                    <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/20 text-[7px] h-3 px-1 font-black leading-none">
+                      YAHOO FALLBACK
+                    </Badge>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -388,9 +395,14 @@ export function DashboardStats({ stats, loading }: DashboardStatsProps) {
                    </ResponsiveContainer>
                 </div>
                 <div className="relative z-10">
-                  <span className="text-[9px] font-black text-zinc-500 uppercase block mb-2 group-hover/idx:text-primary transition-colors tracking-widest leading-none">
-                    {idx.code}
-                  </span>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[9px] font-black text-zinc-500 uppercase group-hover/idx:text-primary transition-colors tracking-widest leading-none">
+                      {idx.code}
+                    </span>
+                    {idx.isFallback && (
+                      <span className="text-[6px] font-black text-amber-500/60 uppercase tracking-tighter">YF</span>
+                    )}
+                  </div>
                   <p className="text-xl font-black text-white mb-2 font-mono tracking-tighter leading-none">
                     {loading ? "---" : idx.value}
                   </p>

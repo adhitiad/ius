@@ -6,16 +6,70 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Plus, Bot, Headset } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const ChatList = () => {
   const { threads, activeThreadId, setActiveThread } = useChatStore();
 
   return (
     <div className="flex flex-col h-full border-r border-border bg-background/50 backdrop-blur-sm">
-      <div className="p-4 border-b border-border">
+      <div className="p-4 border-b border-border flex items-center justify-between">
         <h2 className="text-xl font-bold bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">
           Signals & Support
         </h2>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button size="icon" variant="ghost" className="rounded-full hover:bg-emerald-500/10 hover:text-emerald-500">
+              <Plus className="size-5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem 
+              className="gap-2 cursor-pointer"
+              onClick={() => {
+                const { addThread, setActiveThread } = useChatStore.getState();
+                const newThread = {
+                  id: 'ius_ai',
+                  name: 'Agen IUS (AI)',
+                  type: 'ai' as const,
+                  avatar: '/avatars/ai-bot.png',
+                  unreadCount: 0,
+                };
+                addThread(newThread);
+                setActiveThread(newThread.id);
+              }}
+            >
+              <Bot className="size-4 text-emerald-500" />
+              <span>Mulai Chat AI</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              className="gap-2 cursor-pointer"
+              onClick={() => {
+                const { addThread, setActiveThread } = useChatStore.getState();
+                const id = `staff_${Date.now()}`;
+                const newThread = {
+                  id,
+                  name: 'Staff Support',
+                  type: 'staff' as const,
+                  avatar: '/avatars/staff.png',
+                  unreadCount: 0,
+                };
+                addThread(newThread);
+                setActiveThread(newThread.id);
+              }}
+            >
+              <Headset className="size-4 text-blue-500" />
+              <span>Hubungi Staff</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       <ScrollArea className="flex-1">
         <div className="flex flex-col gap-1 p-2">

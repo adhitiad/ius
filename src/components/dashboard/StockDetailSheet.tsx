@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
 
 interface StockDetailSheetProps {
   ticker: string | null;
@@ -130,6 +131,11 @@ export function StockDetailSheet({ ticker, isOpen, onClose, initialData }: Stock
                              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                           </span>
                           <p className="text-[10px] font-black text-white uppercase tracking-widest">Pengawasan Aktif</p>
+                          {initialData?.isFallback && (
+                            <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/20 text-[6px] h-3 px-1 font-black leading-none ml-1">
+                              YAHOO
+                            </Badge>
+                          )}
                        </div>
                     </div>
                  </div>

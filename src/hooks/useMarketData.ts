@@ -5,8 +5,21 @@ import { ScreenerItem, SystemHealthResponse, MarketInsights } from "@/types/api"
 export interface StockData extends ScreenerItem {}
 
 export interface MarketStats {
-  ihsg: { value: string; change: string; up: boolean };
-  majorIndices: { code: string; value: string; change: string; up: boolean }[];
+  ihsg: { 
+    value: string; 
+    change: string; 
+    up: boolean;
+    source?: string;
+    isFallback?: boolean;
+  };
+  majorIndices: { 
+    code: string; 
+    value: string; 
+    change: string; 
+    up: boolean;
+    source?: string;
+    isFallback?: boolean;
+  }[];
   activeSignals: number;
   winRate: string;
   topGainerSentiment: string;
@@ -63,7 +76,9 @@ export function useMarketData(tier?: number) {
             code: idx.IndexCode,
             value: idx.Current,
             change: idx.Percent,
-            up: !String(idx.Change ?? "0").startsWith("-")
+            up: !String(idx.Change ?? "0").startsWith("-"),
+            source: idx.source,
+            isFallback: idx.is_fallback
           }));
         
         // 4. Derived Stats (Using real data where available)
@@ -71,7 +86,9 @@ export function useMarketData(tier?: number) {
           ihsg: { 
             value: ihsgIdx?.Current || "0,000.00", 
             change: ihsgIdx?.Percent || "0.00%", 
-            up: !String(ihsgIdx?.Change ?? "0").startsWith("-") 
+            up: !String(ihsgIdx?.Change ?? "0").startsWith("-"),
+            source: ihsgIdx?.source,
+            isFallback: ihsgIdx?.is_fallback
           },
           majorIndices: majorIndices,
           activeSignals: stocks.filter(s => s.signal.includes("BUY")).length,

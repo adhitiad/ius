@@ -39,6 +39,9 @@ interface ChatState {
   setTypingIndicator: (threadId: string, status: 'typing' | 'thinking' | null) => void;
   connectWebSocket: (threadId: string) => void;
   disconnectWebSocket: () => void;
+  addThread: (thread: ChatThread) => void;
+  setThreads: (threads: ChatThread[]) => void;
+  fetchThreads: () => Promise<void>;
 }
 
 // Helper to calculate total unread
@@ -260,5 +263,57 @@ export const useChatStore = create<ChatState>((set, get) => ({
         [threadId]: status,
       },
     }));
+  },
+
+  addThread: (thread) => {
+    set((state) => {
+      // Check if already exists
+      if (state.threads.find(t => t.id === thread.id)) return state;
+      return {
+        threads: [thread, ...state.threads],
+        totalUnreadCount: calculateTotalUnread([thread, ...state.threads]),
+      };
+    });
+  },
+
+  setThreads: (threads) => {
+    set({ 
+      threads,
+      totalUnreadCount: calculateTotalUnread(threads)
+    });
+  },
+
+  fetchThreads: async () => {
+    const token = getToken();
+    if (!token) return;
+
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://ap1.aiuiso.site/api/v1";
+      const response = await fetch(`${baseUrl}/chat/threads`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        // Map backend response to frontend ChatThread type
+        const mappedThreads: ChatThread[] = data.map((t: any) => ({
+          id: t.thread_id,
+          name: t.participant_name,
+          type: t.thread_id.includes('ius') ? 'ai' : 'staff',
+          lastMessage: t.last_message,
+          avatar: t.thread_id.includes('ius') ? '/avatars/ai-bot.png' : '/avatars/staff.png',
+          unreadCount: 0
+        }));
+        
+        set({ 
+          threads: mappedThreads,
+          totalUnreadCount: calculateTotalUnread(mappedThreads)
+        });
+      }
+    } catch (e) {
+      console.error('Failed to fetch threads:', e);
+    }
   },
 }));

@@ -40,10 +40,12 @@ export default function Home() {
       name: s.ticker,
       price: s.price,
       change: s.change,
-      volume: `${(s.spike_ratio * 100).toFixed(0)}%`,
+      volume: `${((s.spike_ratio || 0) * 100).toFixed(0)}%`,
       bandarPower: s.bandar_score,
-      signal: s.signal.includes("ACC") ? "ACCUMULATION" : 
-              s.signal.includes("DIST") ? "DISTRIBUTION" : "NEUTRAL"
+      signal: s.signal?.includes("ACC") ? "ACCUMULATION" : 
+              s.signal?.includes("DIST") ? "DISTRIBUTION" : "NEUTRAL",
+      source: s.source,
+      isFallback: s.is_fallback
     }));
   }, [data?.stocks]);
 

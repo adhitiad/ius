@@ -21,6 +21,7 @@ import * as React from "react";
 import { useMemo } from "react";
 import { StockDetailSheet } from "./StockDetailSheet";
 import { StockSparkline } from "./StockSparkline";
+import { Badge } from "@/components/ui/badge";
 
 export interface WhaleData {
   id: string;
@@ -31,6 +32,8 @@ export interface WhaleData {
   volume: string;
   bandarPower: number;
   signal: "ACCUMULATION" | "DISTRIBUTION" | "NEUTRAL";
+  source?: string;
+  isFallback?: boolean;
 }
 
 export interface WhaleDetectorTableProps {
@@ -71,11 +74,18 @@ export function WhaleDetectorTable({ data, loading }: WhaleDetectorTableProps) {
               {row.original.ticker.substring(0, 2)}
             </div>
             <div className="space-y-1">
-              <div className="font-black text-2xl tracking-tighter text-white group-hover:text-primary transition-colors duration-500 italic">
-                {row.original.ticker}
+              <div className="flex items-center gap-2">
+                <div className="font-black text-2xl tracking-tighter text-white group-hover:text-primary transition-colors duration-500 italic">
+                  {row.original.ticker}
+                </div>
+                {row.original.isFallback && (
+                  <Badge variant="outline" className="bg-amber-500/10 text-amber-400 border-amber-500/20 text-[7px] h-4 px-1 font-black tracking-tighter uppercase leading-none">
+                    Fallback
+                  </Badge>
+                )}
               </div>
               <div className="text-[9px] font-black text-zinc-700 uppercase tracking-widest group-hover:text-zinc-500 transition-colors">
-                Verified Intelligence
+                {row.original.isFallback ? "Secondary Protocol" : "Verified Intelligence"}
               </div>
             </div>
           </div>

@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { ScreenerItem } from "@/types/api";
+import { Badge } from "@/components/ui/badge";
 import {
   ColumnDef,
   flexRender,
@@ -49,11 +50,18 @@ export function ScreenerTable({ data, loading }: ScreenerTableProps) {
               {row.original.ticker.substring(0, 2)}
             </div>
             <div className="space-y-1">
-              <div className="font-black text-2xl tracking-tighter text-white group-hover:text-primary transition-colors duration-500 italic">
-                {row.original.ticker}
+              <div className="flex items-center gap-2">
+                <div className="font-black text-2xl tracking-tighter text-white group-hover:text-primary transition-colors duration-500 italic">
+                  {row.original.ticker}
+                </div>
+                {row.original.is_fallback && (
+                  <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/20 text-[7px] h-3 px-1 font-black leading-none">
+                    FALLBACK
+                  </Badge>
+                )}
               </div>
               <div className="text-[9px] font-black text-zinc-700 uppercase tracking-widest group-hover:text-zinc-500 transition-colors">
-                AI Filtered
+                {row.original.is_fallback ? "Secondary Node" : "AI Filtered"}
               </div>
             </div>
           </div>

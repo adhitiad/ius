@@ -26,14 +26,20 @@ export interface TickerData {
   volume?: number;
   high?: number;
   low?: number;
+  source?: string;
+  isFallback?: boolean;
+  ingestedAt?: string;
 }
 
 export interface PriceData {
   price: number;
   volume: number;
   timestamp: number;
-  change?: number; // Opsional: tetap disimpan untuk kompatibilitas UI
-  changePercent?: number; // Opsional: tetap disimpan untuk kompatibilitas UI
+  change?: number;
+  changePercent?: number;
+  source?: string;
+  isFallback?: boolean;
+  ingestedAt?: string;
 }
 
 interface MarketState {
@@ -97,9 +103,11 @@ export const useMarketStore = create<MarketState>()(
                 price: data.price ?? prev?.price ?? 0,
                 volume: data.volume ?? prev?.volume ?? 0,
                 timestamp: data.lastUpdate ?? Date.now(),
-                // Pertahankan change data untuk UI
                 change: data.change ?? prev?.change ?? 0,
                 changePercent: data.changePercent ?? prev?.changePercent ?? 0,
+                source: data.source ?? prev?.source,
+                isFallback: data.isFallback ?? prev?.isFallback,
+                ingestedAt: data.ingestedAt ?? prev?.ingestedAt,
               };
             });
             
