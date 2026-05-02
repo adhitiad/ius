@@ -7,6 +7,7 @@ import { Send, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
 
 /**
  * Modal onboarding Telegram saat pertama login dan telegram_id belum terisi.
@@ -82,9 +83,9 @@ export function TelegramOnboarding() {
                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">
                     Neural Address (ID)
                  </label>
-                 <a href="https://t.me/userinfobot" target="_blank" className="text-[9px] font-black uppercase text-emerald-500/70 hover:text-emerald-400 underline tracking-widest transition-colors">
+                 <Link href="https://t.me/userinfobot" target="_blank" className="text-[9px] font-black uppercase text-emerald-500/70 hover:text-emerald-400 underline tracking-widest transition-colors">
                     Get ID via @userinfobot
-                 </a>
+                 </Link>
               </div>
               <div className="relative group">
                 <Input

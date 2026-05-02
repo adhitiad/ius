@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Header } from "@/components/Header";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
@@ -42,9 +43,9 @@ export default function PlatformLayout({
                </div>
                <div className="hidden md:block h-12 w-px bg-white/5" />
                <div className="flex gap-8 text-[10px] font-black uppercase tracking-[0.3em]">
-                  <a href="/privacy" className="text-zinc-500 hover:text-emerald-500 transition-all duration-300">Privacy</a>
-                  <a href="/terms" className="text-zinc-500 hover:text-emerald-500 transition-all duration-300">Terms</a>
-                  <a href="/status" className="text-zinc-500 hover:text-emerald-500 transition-all duration-300">System</a>
+                  <Link href="/privacy" className="text-zinc-500 hover:text-emerald-500 transition-all duration-300">Privacy</Link>
+                  <Link href="/terms" className="text-zinc-500 hover:text-emerald-500 transition-all duration-300">Terms</Link>
+                  <Link href="/status" className="text-zinc-500 hover:text-emerald-500 transition-all duration-300">System</Link>
                </div>
             </div>
           </div>

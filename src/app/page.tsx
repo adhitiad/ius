@@ -14,6 +14,7 @@ import {
   X
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 import NewsTicker from "@/components/NewsTicker";
 import { WhaleDetectorTable, WhaleData } from "@/components/dashboard/WhaleDetectorTable";
 import { useMarketData } from "@/hooks/useMarketData";
@@ -75,16 +76,16 @@ export default function Home() {
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-10">
             {["Market", "Intelligence", "API Docs", "Pricing"].map(item => (
-              <a key={item} href="#" className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 hover:text-emerald-400 transition-colors">
+              <Link key={item} href="#" className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 hover:text-emerald-400 transition-colors">
                 {item}
-              </a>
+              </Link>
             ))}
-            <button 
-              onClick={() => window.location.href='/dashboard'}
-              className="px-8 py-3 rounded-xl bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] hover:bg-emerald-400 transition-all hover:scale-105 active:scale-95 shadow-xl"
+            <Link 
+              href="/dashboard"
+              className="px-8 py-3 rounded-xl bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] hover:bg-emerald-400 transition-all hover:scale-105 active:scale-95 shadow-xl inline-block"
             >
               Control Center
-            </button>
+            </Link>
           </div>
 
           {/* Mobile Menu Trigger */}
@@ -100,16 +101,16 @@ export default function Home() {
         mobileMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full pointer-events-none"
       )}>
          {["Market", "Intelligence", "API Docs", "Pricing"].map(item => (
-            <a key={item} href="#" className="text-3xl font-black uppercase tracking-widest text-zinc-600 hover:text-white" onClick={() => setMobileMenuOpen(false)}>
+            <Link key={item} href="#" className="text-3xl font-black uppercase tracking-widest text-zinc-600 hover:text-white" onClick={() => setMobileMenuOpen(false)}>
               {item}
-            </a>
+            </Link>
          ))}
-         <button 
-          onClick={() => window.location.href='/dashboard'}
-          className="mt-10 px-12 py-5 rounded-2xl bg-emerald-500 text-black text-xs font-black uppercase tracking-widest"
+         <Link 
+          href="/dashboard"
+          className="mt-10 px-12 py-5 rounded-2xl bg-emerald-500 text-black text-xs font-black uppercase tracking-widest inline-block"
          >
            Akses Dashboard
-         </button>
+         </Link>
       </div>
 
       {/* 2. SUPERIOR HERO SECTION */}
@@ -134,13 +135,13 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col md:flex-row items-center justify-center gap-6 pt-8">
-               <button 
-                onClick={() => window.location.href='/dashboard'}
-                className="group w-full md:w-auto px-12 py-7 rounded-[2rem] bg-emerald-500 text-black font-black text-xs uppercase tracking-[0.3em] transition-all hover:scale-105 active:scale-95 shadow-[0_15px_60px_-10px_rgba(16,185,129,0.5)] flex items-center justify-center gap-4"
+               <Link 
+                href="/dashboard"
+                className="group w-full md:w-auto px-12 py-7 rounded-[2rem] bg-emerald-500 text-black font-black text-xs uppercase tracking-[0.3em] transition-all hover:scale-105 active:scale-95 shadow-[0_15px_60px_-10px_rgba(16,185,129,0.5)] flex items-center justify-center gap-4 inline-flex"
                >
                  Jalankan Kognisi
                  <ArrowRight className="size-5 group-hover:translate-x-1 transition-transform" />
-               </button>
+               </Link>
                <button className="w-full md:w-auto px-12 py-7 rounded-[2rem] bg-white/[0.02] border border-white/5 font-black text-zinc-400 text-xs uppercase tracking-[0.3em] hover:bg-white/[0.05] hover:text-white transition-all backdrop-blur-sm">
                   Laporan Eksklusif
                </button>
@@ -231,13 +232,13 @@ export default function Home() {
             </div>
 
             <div className="mt-12 flex justify-center relative z-10">
-               <button 
-                onClick={() => window.location.href='/dashboard'}
+               <Link 
+                href="/dashboard"
                 className="group flex items-center gap-4 text-xs font-black uppercase tracking-[0.5em] text-zinc-600 hover:text-emerald-500 transition-all"
                >
                  Tampilkan Semua Spektrum Neural
                  <ChevronRight className="size-5 group-hover:translate-x-2 transition-transform" />
-               </button>
+               </Link>
             </div>
          </div>
       </section>
@@ -273,7 +274,7 @@ export default function Home() {
                     <ul className="space-y-4">
                        {col.links.map(link => (
                          <li key={link}>
-                           <a href="#" className="text-[10px] font-black text-zinc-700 hover:text-emerald-500 transition-colors uppercase tracking-[0.2em]">{link}</a>
+                           <Link href="#" className="text-[10px] font-black text-zinc-700 hover:text-emerald-500 transition-colors uppercase tracking-[0.2em]">{link}</Link>
                          </li>
                        ))}
                     </ul>

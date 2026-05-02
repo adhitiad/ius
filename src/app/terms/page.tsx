@@ -1,3 +1,4 @@
+import DateDisplay from "@/components/DateDisplay";
 import {
   Card,
   CardContent,
@@ -7,7 +8,6 @@ import {
 } from "@/components/ui/card";
 import { Metadata } from "next";
 import Link from "next/link";
-import DateDisplay from "@/components/DateDisplay";
 
 export const metadata: Metadata = {
   title: "Ketentuan Umum | AI Trading Hub",
@@ -25,9 +25,9 @@ export default function TermsPage() {
             <h1 className="text-4xl font-extrabold tracking-tight font-outfit text-white">
               Ketentuan Umum
             </h1>
-          <p className="text-zinc-400">
-            Terakhir diperbarui: <DateDisplay />
-          </p>
+            <p className="text-zinc-400">
+              Terakhir diperbarui: <DateDisplay />
+            </p>
           </div>
 
           {/* Introduction */}
@@ -245,12 +245,12 @@ export default function TermsPage() {
             <p className="text-zinc-300 leading-relaxed">
               Jika Anda memiliki pertanyaan terkait Ketentuan Umum ini, silakan
               hubungi kami di:{" "}
-              <a
-                href="mailto:legal@aitradinghub.com"
+              <Link
+                href="mailto:legal@aiuiso.site"
                 className="text-blue-400 hover:underline"
               >
-                legal@aitradinghub.com
-              </a>
+                legal@aiuiso.site
+              </Link>
             </p>
           </Card>
 

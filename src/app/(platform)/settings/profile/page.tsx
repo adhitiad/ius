@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Button } from "@/components/ui/button";
@@ -129,7 +130,7 @@ export default function ProfileSettingsPage() {
       {/* Quick Access Logic */}
       <div className="flex justify-center">
         <Button variant="ghost" asChild className="text-zinc-500 hover:text-zinc-300 text-xs h-11 px-6">
-          <a href="/dashboard">{t.common.back_to_dashboard}</a>
+          <Link href="/dashboard">{t.common.back_to_dashboard}</Link>
         </Button>
       </div>
     </div>
