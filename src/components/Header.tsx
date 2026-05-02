@@ -42,7 +42,7 @@ export function Header() {
   const t = useTranslation();
 
   return (
-    <header className="sticky top-0 z-50 flex h-16 w-full shrink-0 items-center px-4 bg-background/40 backdrop-blur-2xl border-b border-border/40 relative overflow-hidden transition-all duration-700">
+    <header className="top-0 z-50 flex h-14 w-full shrink-0 items-center px-2 bg-background/40 backdrop-blur-2xl border-b border-border/40 relative overflow-hidden transition-all duration-700">
       {/* Dynamic Aurora Glow Effects - More prominent in Aurora/Cool themes */}
       <div className="absolute -top-12 -left-12 w-64 h-64 bg-primary/20 blur-[100px] animate-aurora pointer-events-none mix-blend-screen opacity-50" />
       <div className="absolute -bottom-12 -right-12 w-64 h-64 bg-blue-500/10 blur-[100px] animate-aurora [animation-delay:2s] pointer-events-none mix-blend-screen opacity-50" />
