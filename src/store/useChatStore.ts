@@ -28,6 +28,11 @@ interface ChatState {
   totalUnreadCount: number;
   isTyping: Record<string, 'typing' | 'thinking' | null>;
   wsConnected: boolean;
+  mcpConfig: {
+    enabled: boolean;
+    type: 'internal' | 'external';
+    customUrl?: string;
+  };
   
   // Actions
   setActiveThread: (threadId: string | null) => void;
@@ -42,6 +47,7 @@ interface ChatState {
   addThread: (thread: ChatThread) => void;
   setThreads: (threads: ChatThread[]) => void;
   fetchThreads: () => Promise<void>;
+  updateMcpConfig: (config: Partial<ChatState['mcpConfig']>) => void;
 }
 
 // Helper to calculate total unread
@@ -94,6 +100,10 @@ export const useChatStore = create<ChatState>((set, get) => ({
   totalUnreadCount: 0,
   isTyping: {},
   wsConnected: false,
+  mcpConfig: {
+    enabled: true,
+    type: 'internal'
+  },
 
   setActiveThread: (threadId) => {
     set({ activeThreadId: threadId });
@@ -134,23 +144,35 @@ export const useChatStore = create<ChatState>((set, get) => ({
         if (data.type === 'typing_status') {
           state.setTypingIndicator(threadId, data.status);
         } else if (data.type === 'content') {
-          const newMessage: Message = {
-            id: `msg-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
-            threadId,
-            sender: threadId.includes('staff') ? 'staff' : 'ai',
-            text: data.chunk,
-            timestamp: Date.now(),
-            isDeleted: false,
-            status: 'sent',
-          };
-          set((state) => ({
-            messages: [...state.messages, newMessage],
-            threads: state.threads.map(t => 
-              t.id === threadId 
-                ? { ...t, lastMessage: data.chunk }
-                : t
-            ),
-          }));
+          set((state) => {
+            const lastMsg = state.messages[state.messages.length - 1];
+            const sender = threadId.includes('staff') ? 'staff' : 'ai';
+            
+            if (lastMsg && lastMsg.sender === sender && lastMsg.threadId === threadId) {
+              const newText = lastMsg.text + data.chunk;
+              const updatedMessages = [...state.messages];
+              updatedMessages[updatedMessages.length - 1] = { ...lastMsg, text: newText };
+              
+              return {
+                messages: updatedMessages,
+                threads: state.threads.map(t => t.id === threadId ? { ...t, lastMessage: newText } : t)
+              };
+            }
+
+            const newMessage: Message = {
+              id: `msg-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
+              threadId,
+              sender,
+              text: data.chunk,
+              timestamp: Date.now(),
+              isDeleted: false,
+              status: 'sent',
+            };
+            return {
+              messages: [...state.messages, newMessage],
+              threads: state.threads.map(t => t.id === threadId ? { ...t, lastMessage: data.chunk } : t),
+            };
+          });
         }
       } catch (e) {
         console.error('Error parsing WebSocket message:', e);
@@ -204,7 +226,11 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
     // Send via WebSocket
     if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(text);
+      const payload = {
+        message: text,
+        mcp_config: get().mcpConfig
+      };
+      ws.send(JSON.stringify(payload));
       // Update status to sent
       setTimeout(() => {
         get().updateMessageStatus(messageId, 'sent');
@@ -315,5 +341,10 @@ export const useChatStore = create<ChatState>((set, get) => ({
     } catch (e) {
       console.error('Failed to fetch threads:', e);
     }
+  },
+  updateMcpConfig: (config) => {
+    set((state) => ({
+      mcpConfig: { ...state.mcpConfig, ...config }
+    }));
   },
 }));

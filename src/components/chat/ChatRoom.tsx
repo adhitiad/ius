@@ -10,7 +10,22 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { useChatStore } from "@/store/useChatStore";
@@ -28,6 +43,8 @@ import {
   MoreVertical,
   Paperclip,
   Send,
+  Settings,
+  Globe,
   Trash2,
   User,
   XCircle,
@@ -44,6 +61,8 @@ export const ChatRoom = () => {
     deleteMessage,
     clearHistory,
     isTyping,
+    mcpConfig,
+    updateMcpConfig,
   } = useChatStore();
 
   const [inputText, setInputText] = useState("");
@@ -177,6 +196,83 @@ export const ChatRoom = () => {
             Online - Trading Asisstant
           </p>
         </div>
+        
+        {/* MCP Settings Dialog */}
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className={cn(
+                "text-muted-foreground transition-colors",
+                mcpConfig.enabled ? "text-emerald-500 bg-emerald-500/10" : ""
+              )}
+              title="MCP Configuration"
+            >
+              <Settings className="size-5" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px] border-border bg-card">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Globe className="size-5 text-emerald-500" />
+                Konfigurasi MCP
+              </DialogTitle>
+              <DialogDescription>
+                Model Context Protocol (MCP) memungkinkan AI mengakses basis data atau sumber daya eksternal secara real-time.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-6 py-4">
+              <div className="flex items-center justify-between space-x-2 p-3 rounded-lg bg-muted/30 border border-border/50">
+                <div className="space-y-0.5">
+                  <p className="text-sm font-medium">Gunakan MCP</p>
+                  <p className="text-xs text-muted-foreground">Aktifkan untuk memberikan konteks tambahan ke AI</p>
+                </div>
+                <input 
+                  type="checkbox"
+                  className="size-5 accent-emerald-500 cursor-pointer"
+                  checked={mcpConfig.enabled}
+                  onChange={(e) => updateMcpConfig({ enabled: e.target.checked })}
+                />
+              </div>
+
+              {mcpConfig.enabled && (
+                <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium">Sumber MCP</p>
+                    <Select 
+                      value={mcpConfig.type} 
+                      onValueChange={(val: 'internal' | 'external') => updateMcpConfig({ type: val })}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Pilih Sumber" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="internal">MCP Bawaan (Internal Memory)</SelectItem>
+                        <SelectItem value="external">MCP Eksternal (Custom URL)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {mcpConfig.type === 'external' && (
+                    <div className="space-y-2 animate-in fade-in zoom-in-95">
+                      <p className="text-sm font-medium">URL MCP Eksternal</p>
+                      <Input 
+                        placeholder="https://api.example.com/mcp"
+                        value={mcpConfig.customUrl}
+                        onChange={(e) => updateMcpConfig({ customUrl: e.target.value })}
+                        className="bg-muted/50 border-border/50 focus:border-emerald-500/50"
+                      />
+                      <p className="text-[10px] text-muted-foreground px-1">
+                        AI akan mencoba mengambil data dari URL ini setiap kali Anda mengirim pesan.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
