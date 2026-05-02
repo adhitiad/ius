@@ -24,11 +24,7 @@ export const useMCP = () => {
           version: "1.0.0",
         },
         {
-          capabilities: {
-            prompts: {},
-            resources: {},
-            tools: {},
-          },
+          capabilities: {},
         }
       );
 
