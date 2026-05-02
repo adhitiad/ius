@@ -60,19 +60,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       isActive: pathname === "/dashboard",
     },
     {
-      title: "Neural Intelligence",
+      title: t.navigation.intelligence,
       url: "/intelligence",
       icon: Brain,
       isActive: pathname === "/intelligence",
     },
     {
-      title: "Chat",
+      title: t.navigation.chat,
       url: "/chat",
       icon: MessageSquare,
       isActive: pathname === "/chat",
     },
     {
-      title: "Market",
+      title: t.navigation.market,
       url: "#",
       icon: Search,
       items: [
@@ -87,7 +87,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       ],
     },
     {
-      title: "Tools",
+      title: t.navigation.tools,
       url: "#",
       icon: History,
       items: [
@@ -96,7 +96,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           url: "/backtester",
         },
         {
-          title: "Strategy Builder",
+          title: t.navigation.strategy_builder,
           url: "/strategy-builder",
         },
       ],
@@ -105,12 +105,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const navSecondary = [
     {
-      title: "Security Vault",
+      title: t.navigation.security_vault,
       url: "/security",
       icon: Shield,
     },
     {
-      title: "Pricing",
+      title: t.navigation.pricing,
       url: "/pricing",
       icon: CreditCard,
     },
@@ -148,7 +148,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Platform</SidebarGroupLabel>
+          <SidebarGroupLabel>{t.navigation.platform}</SidebarGroupLabel>
           <SidebarMenu>
             {navMain.map((item) => (
               <Collapsible
@@ -203,7 +203,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenu>
         </SidebarGroup>
         <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-          <SidebarGroupLabel>Management</SidebarGroupLabel>
+          <SidebarGroupLabel>{t.navigation.management}</SidebarGroupLabel>
           <SidebarMenu>
             {navSecondary
               .filter(item => !item.roles || (user && item.roles.includes(user.role)))
@@ -241,7 +241,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                className="text-sidebar-foreground hover:text-rose-400 hover:bg-rose-400/10"
              >
                <LogOut className="size-4" />
-               <span>Sign Out</span>
+               <span>{t.navigation.sign_out}</span>
              </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

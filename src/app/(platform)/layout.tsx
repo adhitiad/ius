@@ -17,14 +17,14 @@ export default function PlatformLayout({
       <AppSidebar className="hidden md:flex" />
       <SidebarInset className="bg-transparent border-none">
         <Header />
-        <main className="flex-1 relative z-10 p-4 md:p-8 lg:p-12 pb-32">
+        <main className="flex-1 relative z-10 p-4 md:p-6 lg:p-8 pb-20">
           <div className="mx-auto w-full max-w-[1400px]">
             {children}
           </div>
         </main>
         <BottomNav />
         
-        <footer className="relative z-10 py-20 px-8 border-t border-white/[0.05] bg-black/20 backdrop-blur-md">
+        <footer className="relative z-10 py-12 px-8 border-t border-white/[0.05] bg-black/20 backdrop-blur-md">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12">
             <div className="flex flex-col gap-4 text-center md:text-left">
                <div className="text-sm font-black uppercase tracking-[0.5em] text-white flex items-center gap-3 justify-center md:justify-start">

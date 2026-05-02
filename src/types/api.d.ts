@@ -145,10 +145,11 @@ export interface SystemHealthResponse {
   uptime: string;
   diagnostics: {
     cpu: string;
+    cpu_usage: string;
     ram_total: string;
     ram_usage: string;
     gpu: {
-      has_gpu: boolean;
+      has_gpu: boolean | string | any;
       gpu_name: string;
       vram_total: string;
     };

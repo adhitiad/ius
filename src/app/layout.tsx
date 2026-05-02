@@ -7,6 +7,7 @@ import Providers from "@/components/Providers";
 import { Toaster } from "sonner";
 import { TelegramOnboarding } from "@/components/modals/TelegramOnboarding";
 import LanguageHandler from "@/components/LanguageHandler";
+import ThemeHandler from "@/components/ThemeHandler";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -88,6 +89,7 @@ export default function RootLayout({
       <body className={cn(inter.variable, outfit.variable, geist.variable, "min-h-screen bg-[#020203] font-sans antialiased text-zinc-400 overflow-x-hidden")}>
           <Providers>
             <LanguageHandler />
+            <ThemeHandler />
             <MarketDataProvider>
               {children}
             </MarketDataProvider>

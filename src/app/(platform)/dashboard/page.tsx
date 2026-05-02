@@ -18,6 +18,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useMarketData } from "@/hooks/useMarketData";
 import { cn } from "@/lib/utils";
 import { Cpu, Database, Globe, MessageSquare, Search } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useMemo, useState } from "react";
 
 const TABS = [
@@ -79,6 +80,7 @@ const toWhaleData = (item: any, index: number): WhaleData => {
 };
 
 export default function DashboardPage() {
+  const t = useTranslation();
   const [activeTab, setActiveTab] = useState("BLUECHIPS");
 
   const tierMap: Record<string, number> = {
@@ -139,16 +141,14 @@ export default function DashboardPage() {
   }, [filteredRows]);
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white flex flex-col relative overflow-hidden selection:bg-primary/30">
-      {/* Background Decor */}
+    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 ease-out relative z-10">
+      {/* Background Decor - Subtle highlights */}
       <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-emerald-500/5 blur-[150px] rounded-full pointer-events-none animate-pulse" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/5 blur-[120px] rounded-full pointer-events-none" />
-
+      
       <NewsTicker />
 
-      <main className="flex-1 p-6 lg:p-12 max-w-[1700px] mx-auto w-full space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 ease-out relative z-10">
-        {/* Header Section */}
-        <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-10">
+      {/* Header Section */}
+      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-10 mt-8">
           <div className="space-y-4">
             <div className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-white/[0.03] border border-white/10 backdrop-blur-xl">
               <span className="relative flex h-2 w-2">
@@ -156,13 +156,13 @@ export default function DashboardPage() {
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
               <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">
-                Data Feed: Live
+                {t.dashboard.data_feed_live}
               </span>
             </div>
             <h1 className="text-7xl font-black tracking-tighter leading-[0.85]">
-              Market{" "}
+              {t.dashboard.market_pulse.split(" ")[0]}{" "}
               <span className="text-transparent bg-clip-text bg-linear-to-r from-emerald-400 to-emerald-600 drop-shadow-[0_0_25px_rgba(16,185,129,0.2)]">
-                Pulse
+                {t.dashboard.market_pulse.split(" ")[1]}
               </span>
             </h1>
             <div className="pt-2">
@@ -174,7 +174,7 @@ export default function DashboardPage() {
             <div className="relative group flex-1 xl:flex-none min-w-85">
               <Search className="absolute left-5 top-1/2 -translate-y-1/2 size-5 text-zinc-600 group-focus-within:text-primary transition-all" />
               <Input
-                placeholder="Cari kode saham..."
+                placeholder={t.dashboard.search_placeholder}
                 className="pl-14 bg-white/2 border-white/5 h-16 w-full rounded-4xl focus:bg-white/5 focus:ring-primary/20 transition-all text-xl font-black placeholder:text-zinc-800"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -185,7 +185,7 @@ export default function DashboardPage() {
               <SheetTrigger asChild>
                 <button className="h-16 px-10 rounded-4xl bg-primary text-black font-black text-xs uppercase tracking-[0.2em] flex items-center gap-4 hover:scale-[1.03] active:scale-95 transition-all shadow-2xl shadow-primary/20 group">
                   <MessageSquare className="size-5 transition-transform group-hover:rotate-12" />
-                  HUBUNGI AGEN IUS
+                  {t.dashboard.contact_agent}
                 </button>
               </SheetTrigger>
               <SheetContent
@@ -221,7 +221,7 @@ export default function DashboardPage() {
               <div className="flex-1 space-y-8 relative z-10 w-full text-center md:text-left">
                 <div className="space-y-2">
                   <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.5em] block">
-                    Sentimen Neural
+                    {t.dashboard.neural_sentiment}
                   </span>
                   <h2
                     className={cn(
@@ -239,7 +239,7 @@ export default function DashboardPage() {
                 <div className="space-y-4">
                   <div className="flex justify-between items-end border-b border-white/5 pb-3">
                     <span className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">
-                      Kekuatan Akumulasi
+                      {t.dashboard.accumulation_power}
                     </span>
                     <span className="text-2xl font-black font-mono text-white tracking-tighter">
                       {marketPulse.avgBandarPower}%
@@ -257,7 +257,7 @@ export default function DashboardPage() {
             </div>
             <div className="space-y-2 relative z-10">
               <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] block">
-                Node Utama
+                {t.dashboard.node_utama}
               </span>
               <div className="flex items-baseline gap-3">
                 <h2 className="text-8xl font-black text-white tracking-tighter leading-none">
@@ -273,7 +273,7 @@ export default function DashboardPage() {
             </div>
             <div className="space-y-5 relative z-10">
               <p className="text-[10px] text-zinc-600 font-black uppercase tracking-[0.2em]">
-                Whale Terdeteksi di Sektor Ini
+                {t.dashboard.whales_detected}
               </p>
             </div>
           </Card>
@@ -286,7 +286,7 @@ export default function DashboardPage() {
                   <Globe className="size-5 text-primary" />
                 </div>
                 <h2 className="text-xl font-black text-white italic tracking-tighter">
-                  Matriks Radar Pasar
+                  {t.dashboard.market_radar}
                 </h2>
               </div>
               <div className="h-px flex-1 bg-gradient-to-r from-primary/30 to-transparent" />
@@ -325,10 +325,10 @@ export default function DashboardPage() {
                   </div>
                   <div>
                     <h2 className="text-4xl font-black text-white tracking-tighter italic">
-                      Aliran Dana <span className="text-primary">Whale</span>
+                      {t.dashboard.whale_flow.split("Whale")[0]} <span className="text-primary">Whale</span> {t.dashboard.whale_flow.split("Whale")[1]}
                     </h2>
                     <p className="text-[11px] text-zinc-600 uppercase font-black tracking-[0.4em] mt-3">
-                      Deteksi Transaksi Institusi Besar
+                      {t.dashboard.detect_whale}
                     </p>
                   </div>
                 </div>
@@ -342,18 +342,6 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
-      </main>
-
-      <footer className="py-16 px-12 border-t border-white/5 bg-black/60 backdrop-blur-2xl">
-        <div className="max-w-[1700px] mx-auto flex flex-col md:flex-row justify-between items-center gap-10 text-center md:text-left">
-          <span className="font-black tracking-tighter text-2xl text-white">
-            IUS.<span className="text-primary">OTAK</span>
-          </span>
-          <p className="text-zinc-700 text-[10px] font-black uppercase tracking-[0.5em]">
-            2024 Intelligence Unit Surveillance
-          </p>
-        </div>
-      </footer>
     </div>
   );
 }

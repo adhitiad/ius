@@ -12,13 +12,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useTranslation } from "@/hooks/useTranslation";
 import { cn } from "@/lib/utils";
@@ -26,108 +19,154 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { useChatStore } from "@/store/useChatStore";
 import { useMarketStore } from "@/store/useMarketStore";
 import {
+  Activity,
   Bell,
+  Brain,
   MessageSquare,
-  Moon,
   Search,
   Settings,
+  Shield,
   User,
+  Zap,
 } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export function Header() {
-  const { user } = useMarketStore();
+  const { user: marketUser } = useMarketStore();
   const { user: authUser, logout } = useAuthStore();
   const { totalUnreadCount } = useChatStore();
   const t = useTranslation();
+  const pathname = usePathname();
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const navLinks = [
+    { title: t.navigation.dashboard, href: "/dashboard" },
+    { title: t.navigation.intelligence, href: "/intelligence", icon: Brain },
+    { title: t.navigation.screener, href: "/screener" },
+    { title: t.navigation.security_vault, href: "/security", icon: Shield },
+  ];
+
+  // Helper to safely access auth translations
+  const authT = (t as any).auth || {
+    premium_member: "Premium Member",
+    logout: "Logout",
+  };
 
   return (
-    <header className="top-0 z-50 flex h-14 w-full shrink-0 items-center px-2 bg-background/40 backdrop-blur-2xl border-b border-border/40 relative overflow-hidden transition-all duration-700">
-      {/* Dynamic Aurora Glow Effects - More prominent in Aurora/Cool themes */}
-      <div className="absolute -top-12 -left-12 w-64 h-64 bg-primary/20 blur-[100px] animate-aurora pointer-events-none mix-blend-screen opacity-50" />
-      <div className="absolute -bottom-12 -right-12 w-64 h-64 bg-blue-500/10 blur-[100px] animate-aurora [animation-delay:2s] pointer-events-none mix-blend-screen opacity-50" />
+    <header
+      className={cn(
+        "sticky top-0 z-50 flex h-20 w-full shrink-0 items-center px-6 transition-all duration-500",
+        scrolled
+          ? "bg-black/60 backdrop-blur-2xl border-b border-white/10 h-16"
+          : "bg-transparent border-b border-transparent",
+      )}
+    >
+      {/* Dynamic Background Glow */}
+      <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/[0.03] via-transparent to-blue-500/[0.03] pointer-events-none" />
 
-      <div className="flex items-center gap-2 relative z-10 w-full max-w-[1400px] mx-auto px-2 md:px-0">
-        <div className="flex items-center gap-1 md:gap-2 shrink-0">
+      <div className="flex items-center gap-6 relative z-10 w-full max-w-[1600px] mx-auto">
+        <div className="flex items-center gap-4 shrink-0">
           <SidebarTrigger
-            className="hover:bg-primary/10 transition-colors h-9 w-9"
-            aria-label="Buka Sidebar"
+            className="hover:bg-white/5 transition-colors h-10 w-10 rounded-xl border border-white/5 bg-zinc-900/40 text-zinc-400 hover:text-white"
+            aria-label={t.common.open_sidebar}
           />
 
-          <div className="hidden xl:flex items-center ml-2 gap-3 px-3 py-1.5 rounded-xl bg-emerald-500/5 border border-emerald-500/10 backdrop-blur-sm">
+          <div className="hidden lg:flex items-center gap-3 px-4 py-2 rounded-2xl bg-emerald-500/5 border border-emerald-500/10 backdrop-blur-md group cursor-default">
             <div className="relative size-2">
               <div className="absolute inset-0 bg-emerald-500 rounded-full animate-ping opacity-75" />
               <div className="relative size-2 bg-emerald-500 rounded-full shadow-[0_0_8px_#10b981]" />
             </div>
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500/80">
-              IUS_BRAIN::LIVE
-            </span>
-          </div>
-
-          <div className="ml-2 hidden md:flex items-center">
-            <div className="h-6 w-[1px] bg-border/60 mx-2" />
-            <NavigationMenu>
-              <NavigationMenuList className="gap-0.5">
-                <NavigationMenuItem>
-                  <NavigationMenuLink
-                    asChild
-                    className={cn(
-                      navigationMenuTriggerStyle(),
-                      "bg-transparent hover:bg-primary/10 hover:text-primary transition-all rounded-full px-3 text-[11px] font-bold uppercase tracking-wider h-8",
-                    )}
-                  >
-                    <Link href="/dashboard">{t.navigation.dashboard}</Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <NavigationMenuLink
-                    asChild
-                    className={cn(
-                      navigationMenuTriggerStyle(),
-                      "bg-transparent hover:bg-primary/10 hover:text-primary transition-all rounded-full px-3 text-[11px] font-bold uppercase tracking-wider h-8",
-                    )}
-                  >
-                    <Link href="/screener">{t.navigation.screener}</Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-              </NavigationMenuList>
-            </NavigationMenu>
-          </div>
-        </div>
-
-        <div className="flex-1 flex justify-center px-4 max-w-md mx-auto hidden sm:flex">
-          <div className="relative w-full group">
-            <Search className="absolute left-3.5 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors duration-300" />
-            <Input
-              type="search"
-              placeholder="Cari..."
-              className="w-full pl-10 pr-12 bg-secondary/30 border-border/40 focus:bg-background/80 focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all duration-300 placeholder:text-muted-foreground/50 rounded-2xl h-10 text-sm"
-            />
-            <div className="absolute right-3 flex items-center gap-1 px-1.5 py-1 rounded-md border border-border/40 bg-background/50 text-[10px] font-bold text-muted-foreground/60 pointer-events-none group-focus-within:border-primary/30 group-focus-within:text-primary transition-all">
-              <span className="text-[11px]">⌘</span>
-              <span>K</span>
+            <div className="flex flex-col">
+              <span className="text-[8px] font-black uppercase tracking-[0.2em] text-emerald-500/70 leading-none">
+                Neural_Grid
+              </span>
+              <span className="text-[7px] font-bold text-zinc-600 uppercase tracking-widest mt-0.5 group-hover:text-emerald-500/50 transition-colors">
+                Latency: 12ms
+              </span>
             </div>
           </div>
+
+          <div className="h-8 w-px bg-white/5 mx-2 hidden xl:block" />
+
+          {/* Expanded Desktop Navigation */}
+          <nav className="hidden xl:flex items-center gap-1">
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href;
+              return (
+                <Link key={link.href} href={link.href}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className={cn(
+                      "h-9 px-4 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 relative group",
+                      isActive
+                        ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
+                        : "text-zinc-500 hover:text-white hover:bg-white/5",
+                    )}
+                  >
+                    {link.icon && (
+                      <link.icon className="size-3 mr-2 opacity-50 group-hover:opacity-100 transition-opacity" />
+                    )}
+                    {link.title}
+                    {isActive && (
+                      <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-1 bg-emerald-500 rounded-full blur-[2px]" />
+                    )}
+                  </Button>
+                </Link>
+              );
+            })}
+          </nav>
         </div>
 
-        <div className="flex items-center gap-1 md:gap-3 shrink-0 ml-auto">
-          <div className="flex items-center gap-1">
+        <div className="flex-1 max-w-md mx-auto hidden md:block">
+          <div className="relative group">
+            <div className="absolute inset-0 bg-emerald-500/5 rounded-2xl blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-zinc-600 group-focus-within:text-emerald-500 transition-colors z-10" />
+            <Input
+              placeholder="Deep Neural Search..."
+              className="relative w-full bg-zinc-900/40 border-white/5 pl-12 rounded-2xl h-10 text-xs font-bold tracking-tight focus:ring-1 focus:ring-emerald-500/20 focus:border-emerald-500/30 transition-all text-white placeholder:text-zinc-700 z-10"
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 shrink-0 ml-auto">
+          <div className="hidden lg:flex items-center gap-3 mr-2">
+            <div className="flex flex-col items-end">
+              <span className="text-[8px] font-black text-zinc-600 uppercase tracking-widest">
+                Server_Cluster
+              </span>
+              <span className="text-[10px] font-bold text-white tracking-tighter">
+                Singapore-01
+              </span>
+            </div>
+            <Activity className="size-4 text-emerald-500/40" />
+          </div>
+
+          <div className="flex items-center gap-1.5 px-2 py-1.5 rounded-2xl bg-zinc-900/40 border border-white/5">
             <LanguageToggle />
             <ThemeSwitcher />
           </div>
 
-          <div className="h-4 w-[1px] bg-border/40 mx-0.5 hidden xs:block" />
+          <div className="h-6 w-px bg-white/5 mx-1 hidden sm:block" />
 
-          <div className="flex items-center gap-1">
-            <Link href="/chat" className="relative group">
+          <div className="flex items-center gap-2">
+            <Link href="/chat" className="relative">
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-9 w-9 rounded-xl relative hover:bg-primary/10 transition-all duration-300"
+                className="h-10 w-10 rounded-2xl bg-zinc-900/40 border border-white/5 hover:bg-emerald-500/10 group transition-all"
               >
-                <MessageSquare className="h-4.5 w-4.5 transition-transform group-hover:scale-110" />
+                <MessageSquare className="size-4.5 text-zinc-400 group-hover:text-emerald-500 transition-colors" />
                 {totalUnreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-br from-rose-500 to-red-600 text-[9px] font-black text-white shadow-lg border-2 border-background animate-in zoom-in duration-300">
+                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-[8px] font-black text-black shadow-lg shadow-emerald-500/20">
                     {totalUnreadCount}
                   </span>
                 )}
@@ -137,9 +176,9 @@ export function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="h-9 w-9 rounded-xl hover:bg-primary/10 transition-all duration-300 group"
+              className="h-10 w-10 rounded-2xl bg-zinc-900/40 border border-white/5 hover:bg-amber-500/10 group transition-all"
             >
-              <Bell className="h-4.5 w-4.5 transition-transform group-hover:rotate-12" />
+              <Bell className="size-4.5 text-zinc-400 group-hover:text-amber-500 transition-colors" />
             </Button>
           </div>
 
@@ -147,80 +186,102 @@ export function Header() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="relative h-10 w-10 p-0 rounded-xl overflow-hidden bg-gradient-to-br from-secondary to-secondary/50 border border-border/40 hover:border-primary/30 transition-all duration-300 shadow-sm"
-                aria-label="Profil Pengguna"
+                className="relative h-11 w-11 p-0 rounded-2xl border border-white/10 hover:border-emerald-500/30 transition-all duration-500 overflow-hidden group shadow-2xl"
+                aria-label={t.common.user_profile}
               >
-                <div className="flex h-full w-full items-center justify-center bg-background/20 backdrop-blur-sm">
-                  <User className="h-5 w-5 text-primary/80" />
-                </div>
-                {/* Active Status Dot */}
-                <span className="absolute bottom-1 right-1 h-2.5 w-2.5 rounded-full bg-emerald-500 border-2 border-background shadow-sm" />
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <User className="size-5 text-zinc-400 group-hover:text-emerald-500 transition-all duration-500" />
+                <span className="absolute bottom-1.5 right-1.5 size-2.5 rounded-full bg-emerald-500 border-2 border-zinc-950 shadow-[0_0_8px_#10b981]" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              className="w-64 mt-2 rounded-2xl border-border/40 p-2 shadow-2xl backdrop-blur-2xl bg-background/90"
+              className="w-72 mt-3 rounded-[2rem] border-white/10 p-2 shadow-2xl backdrop-blur-3xl bg-zinc-950/90 border-t-emerald-500/20"
               align="end"
-              forceMount
             >
-              <DropdownMenuLabel className="p-3">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-blue-500/20 flex items-center justify-center border border-primary/20">
-                    <User className="h-5 w-5 text-primary" />
+              <DropdownMenuLabel className="p-4">
+                <div className="flex items-center gap-4">
+                  <div className="size-12 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-blue-500/20 flex items-center justify-center border border-white/10 relative overflow-hidden group/avatar">
+                    <div className="absolute inset-0 bg-emerald-500/10 animate-pulse" />
+                    <User className="size-6 text-emerald-500 relative z-10" />
                   </div>
                   <div className="flex flex-col">
-                    <p className="text-sm font-bold tracking-tight">
-                      {authUser?.fullName || user?.name || "Premium Member"}
+                    <p className="text-sm font-black tracking-tight leading-none text-white">
+                      {authUser?.fullName ||
+                        marketUser?.name ||
+                        authT.premium_member}
                     </p>
-                    <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest leading-none mt-0.5">
-                      {authUser?.email || user?.email || "verified_user@ius.ai"}
-                    </p>
+                    <div className="flex items-center gap-1.5 mt-2">
+                      <div className="px-1.5 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20">
+                        <span className="text-[7px] font-black text-emerald-500 uppercase tracking-widest">
+                          {authUser?.role || "Neural_Node"}
+                        </span>
+                      </div>
+                      <p className="text-[9px] font-bold text-zinc-600 tracking-tighter truncate max-w-32">
+                        {authUser?.email ||
+                          marketUser?.email ||
+                          "neural_id@ius.ai"}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-border/40 my-2" />
+              <DropdownMenuSeparator className="bg-white/5 my-2" />
               <div className="grid gap-1">
-                <DropdownMenuItem
-                  asChild
-                  className="rounded-xl p-3 focus:bg-primary/10 transition-colors cursor-pointer group"
-                >
-                  <Link
-                    href="/settings/profile"
-                    className="flex items-center w-full"
+                {[
+                  {
+                    title: t.navigation.profile,
+                    href: "/settings/profile",
+                    icon: User,
+                    color: "text-blue-400",
+                  },
+                  {
+                    title: t.navigation.settings,
+                    href: "/settings/profile",
+                    icon: Settings,
+                    color: "text-zinc-400",
+                  },
+                  {
+                    title: t.navigation.security_vault,
+                    href: "/security",
+                    icon: Shield,
+                    color: "text-emerald-400",
+                  },
+                ].map((item) => (
+                  <DropdownMenuItem
+                    key={item.href}
+                    asChild
+                    className="rounded-2xl p-3 focus:bg-white/5 cursor-pointer group"
                   >
-                    <div className="bg-background/80 p-1.5 rounded-lg mr-3 border border-border/40 group-hover:border-primary/30 transition-colors">
-                      <User className="h-4 w-4 text-primary/70" />
-                    </div>
-                    <span className="text-sm font-medium">
-                      {t.navigation.profile}
-                    </span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  asChild
-                  className="rounded-xl p-3 focus:bg-primary/10 transition-colors cursor-pointer group"
-                >
-                  <Link
-                    href="/settings/profile"
-                    className="flex items-center w-full"
-                  >
-                    <div className="bg-background/80 p-1.5 rounded-lg mr-3 border border-border/40 group-hover:border-primary/30 transition-colors">
-                      <Settings className="h-4 w-4 text-primary/70" />
-                    </div>
-                    <span className="text-sm font-medium">
-                      {t.navigation.settings}
-                    </span>
-                  </Link>
-                </DropdownMenuItem>
+                    <Link href={item.href} className="flex items-center">
+                      <div className="size-9 rounded-xl bg-zinc-900 border border-white/5 flex items-center justify-center mr-3 group-hover:border-emerald-500/30 transition-all shadow-inner">
+                        <item.icon
+                          className={cn(
+                            "size-4 transition-all group-hover:scale-110",
+                            item.color,
+                          )}
+                        />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold text-zinc-300 group-hover:text-white transition-colors">
+                          {item.title}
+                        </span>
+                        <span className="text-[8px] font-medium text-zinc-600 uppercase tracking-widest mt-0.5">
+                          Access System
+                        </span>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
               </div>
-              <DropdownMenuSeparator className="bg-border/40 my-2" />
+              <DropdownMenuSeparator className="bg-white/5 my-2" />
               <DropdownMenuItem
                 onClick={logout}
-                className="text-rose-500 rounded-xl p-3 focus:bg-rose-500/10 focus:text-rose-500 transition-colors cursor-pointer font-bold text-sm flex items-center"
+                className="text-rose-500 rounded-2xl p-3 focus:bg-rose-500/10 cursor-pointer font-black text-[10px] uppercase tracking-widest flex items-center group/logout"
               >
-                <div className="bg-rose-500/5 p-1.5 rounded-lg mr-3 border border-rose-500/20">
-                  <Moon className="h-4 w-4 rotate-90" />
+                <div className="size-9 rounded-xl bg-rose-500/5 flex items-center justify-center mr-3 border border-rose-500/10 group-hover/logout:bg-rose-500/20 transition-all">
+                  <Zap className="size-4 text-rose-500" />
                 </div>
-                Keluar Sesi
+                {authT.logout}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
