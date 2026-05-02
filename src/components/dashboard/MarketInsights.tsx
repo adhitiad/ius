@@ -71,7 +71,7 @@ export function MarketInsightsSection({ insights, loading }: MarketInsightsSecti
               </div>
               <div className="flex items-center gap-4">
                 <div className="h-8 w-16 hidden sm:block">
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                     <AreaChart data={generateSparkData(item.price, 'up')}>
                       <defs>
                         <linearGradient id={`grad-up-${idx}`} x1="0" y1="0" x2="0" y2="1">
@@ -119,7 +119,7 @@ export function MarketInsightsSection({ insights, loading }: MarketInsightsSecti
               </div>
               <div className="flex items-center gap-4">
                 <div className="h-8 w-16 hidden sm:block">
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                     <AreaChart data={generateSparkData(item.price, 'down')}>
                       <defs>
                         <linearGradient id={`grad-down-${idx}`} x1="0" y1="0" x2="0" y2="1">
@@ -167,7 +167,7 @@ export function MarketInsightsSection({ insights, loading }: MarketInsightsSecti
               </div>
               <div className="flex items-center gap-4">
                 <div className="h-8 w-16 hidden sm:block">
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                     <LineChart data={generateSparkData(item.foreign_net, 'up')}>
                       <Line type="monotone" dataKey="value" stroke="#3b82f6" strokeWidth={3} dot={false} isAnimationActive={false} />
                     </LineChart>

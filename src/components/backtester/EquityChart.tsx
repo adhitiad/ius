@@ -52,7 +52,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 export function EquityChart({ data }: EquityChartProps) {
   return (
     <div className="w-full h-[400px] bg-zinc-900/20 rounded-2xl border border-zinc-800/50 p-4">
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
         <AreaChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
           <defs>
             <linearGradient id="colorEquity" x1="0" y1="0" x2="0" y2="1">
