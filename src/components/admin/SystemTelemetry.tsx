@@ -22,6 +22,7 @@ const DEFAULT_TELEMETRY: SystemHealthResponse = {
   uptime: "--:--:--",
   diagnostics: {
     cpu: "Detecting CPU...",
+    cpu_usage: "0%",
     ram_total: "0 GB",
     ram_usage: "0%",
     gpu: {

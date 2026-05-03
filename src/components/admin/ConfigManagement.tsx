@@ -18,8 +18,10 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export function ConfigManagement() {
+  const { user } = useAuthStore();
   const [configs, setConfigs] = useState<SystemConfig[]>([]);
   const [loading, setLoading] = useState(true);
   const [savingKey, setSavingKey] = useState<string | null>(null);
@@ -89,10 +91,21 @@ export function ConfigManagement() {
       c.key.toLowerCase().includes("tg") ||
       c.key.toLowerCase().includes("telegram"),
   );
+  
+  const ownerMailConfigs = configs.filter((c) => c.key.startsWith("owner_mail"));
+  const pengelolaMailConfigs = configs.filter((c) => c.key.startsWith("pengelola_mail"));
+  
+  const globalMailConfigs = configs.filter((c) => 
+    c.key.toLowerCase().includes("mail") && 
+    !c.key.startsWith("owner_mail") && 
+    !c.key.startsWith("pengelola_mail")
+  );
+
   const otherConfigs = configs.filter(
     (c) =>
       !c.key.toLowerCase().includes("tg") &&
-      !c.key.toLowerCase().includes("telegram"),
+      !c.key.toLowerCase().includes("telegram") &&
+      !c.key.toLowerCase().includes("mail"),
   );
 
   return (
@@ -124,79 +137,181 @@ export function ConfigManagement() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Telegram Configs */}
-        <Card className="rounded-[2.5rem] bg-zinc-950/40 border-white/10 overflow-hidden backdrop-blur-xl group">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="size-10 rounded-xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center">
-                <Send className="size-5 text-blue-400" />
+        {/* Telegram Configs - Show for both, but filter content if needed */}
+        <Card className="rounded-[2.5rem] bg-zinc-950/40 border-white/10 overflow-hidden backdrop-blur-xl group lg:col-span-2">
+          <CardHeader className="p-8 border-b border-white/5 bg-gradient-to-r from-blue-500/10 to-transparent">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="size-10 rounded-xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center">
+                  <Send className="size-5 text-blue-400" />
+                </div>
+                <CardTitle className="text-xl font-black italic tracking-tight text-white">
+                  Telegram Bot Integration
+                </CardTitle>
               </div>
-              <CardTitle className="text-xl font-black italic tracking-tight text-white">
-                Telegram Bot Integration
-              </CardTitle>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleFetchTgUpdates}
+                disabled={fetchingTg}
+                className="rounded-xl border-blue-500/20 bg-blue-500/5 hover:bg-blue-500/10 text-[10px] font-black uppercase tracking-widest text-blue-400 h-9"
+              >
+                {fetchingTg ? (
+                  <RefreshCw className="size-3 animate-spin mr-2" />
+                ) : (
+                  <Search className="size-3 mr-2" />
+                )}
+                Find IDs
+              </Button>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleFetchTgUpdates}
-              disabled={fetchingTg}
-              className="rounded-xl border-blue-500/20 bg-blue-500/5 hover:bg-blue-500/10 text-[10px] font-black uppercase tracking-widest text-blue-400 h-9"
-            >
-              {fetchingTg ? (
-                <RefreshCw className="size-3 animate-spin mr-2" />
+          </CardHeader>
+          <CardContent className="p-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+              {telegramConfigs.length > 0 ? (
+                telegramConfigs
+                  .filter(c => {
+                    if (user?.role === "owner") return true;
+                    // Pengelola only sees staff/manager related chat IDs if any
+                    return c.key.includes("staff") || c.key.includes("admin");
+                  })
+                  .map((config) => (
+                    <ConfigItem
+                      key={config.id}
+                      config={config}
+                      onSave={handleUpdate}
+                      isSaving={savingKey === config.key}
+                    />
+                  ))
               ) : (
-                <Search className="size-3 mr-2" />
+                <p className="text-zinc-500 text-xs italic py-4">
+                  No Telegram configurations found.
+                </p>
               )}
-              Find IDs
-            </Button>
-          </div>
-          <CardContent className="p-8 space-y-6">
-            {telegramConfigs.length > 0 ? (
-              telegramConfigs.map((config) => (
-                <ConfigItem
-                  key={config.id}
-                  config={config}
-                  onSave={handleUpdate}
-                  isSaving={savingKey === config.key}
-                />
-              ))
-            ) : (
-              <p className="text-zinc-500 text-xs italic py-4">
-                No Telegram configurations found.
-              </p>
-            )}
+            </div>
           </CardContent>
         </Card>
 
-        {/* Other Configs */}
-        <Card className="rounded-[2.5rem] bg-zinc-950/40 border-white/10 overflow-hidden backdrop-blur-xl group">
-          <CardHeader className="p-8 border-b border-white/5 bg-gradient-to-r from-emerald-500/10 to-transparent">
-            <div className="flex items-center gap-4">
-              <div className="size-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
-                <ShieldCheck className="size-5 text-emerald-400" />
+        {/* Global Mail Configs - OWNER ONLY */}
+        {user?.role === "owner" && (
+          <Card className="rounded-[2.5rem] bg-zinc-950/40 border-white/10 overflow-hidden backdrop-blur-xl group lg:col-span-2">
+            <CardHeader className="p-8 border-b border-white/5 bg-gradient-to-r from-orange-500/10 to-transparent">
+              <div className="flex items-center gap-4">
+                <div className="size-10 rounded-xl bg-orange-500/20 border border-orange-500/30 flex items-center justify-center">
+                  <ShieldCheck className="size-5 text-orange-400" />
+                </div>
+                <CardTitle className="text-xl font-black italic tracking-tight text-white">
+                  Global Mail Server (Default SMTP)
+                </CardTitle>
               </div>
-              <CardTitle className="text-xl font-black italic tracking-tight text-white">
-                System Flags & Parameters
-              </CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="p-8 space-y-6">
-            {otherConfigs.length > 0 ? (
-              otherConfigs.map((config) => (
+            </CardHeader>
+            <CardContent className="p-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {globalMailConfigs.map((config) => (
+                  <ConfigItem
+                    key={config.id}
+                    config={config}
+                    onSave={handleUpdate}
+                    isSaving={savingKey === config.key}
+                  />
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Owner Mail Configs - OWNER ONLY */}
+        {user?.role === "owner" && (
+          <Card className="rounded-[2.5rem] bg-zinc-950/40 border-white/10 overflow-hidden backdrop-blur-xl group">
+            <CardHeader className="p-8 border-b border-white/5 bg-gradient-to-r from-purple-500/10 to-transparent">
+              <div className="flex items-center gap-4">
+                <div className="size-10 rounded-xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center">
+                  <ShieldCheck className="size-5 text-purple-400" />
+                </div>
+                <CardTitle className="text-xl font-black italic tracking-tight text-white">
+                  Owner Mail Server
+                </CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="p-8 space-y-6">
+              {ownerMailConfigs.map((config) => (
                 <ConfigItem
                   key={config.id}
                   config={config}
                   onSave={handleUpdate}
                   isSaving={savingKey === config.key}
                 />
-              ))
-            ) : (
-              <p className="text-zinc-500 text-xs italic py-4">
-                No other configurations found.
-              </p>
-            )}
-          </CardContent>
-        </Card>
+              ))}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Pengelola Mail Configs - Visible to BOTH (Owner and Pengelola) */}
+        {(user?.role === "owner" || user?.role === "pengelola") && (
+          <Card className={cn(
+            "rounded-[2.5rem] bg-zinc-950/40 border-white/10 overflow-hidden backdrop-blur-xl group",
+            user?.role === "pengelola" && "lg:col-span-2"
+          )}>
+            <CardHeader className="p-8 border-b border-white/5 bg-gradient-to-r from-cyan-500/10 to-transparent">
+              <div className="flex items-center gap-4">
+                <div className="size-10 rounded-xl bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center">
+                  <ShieldCheck className="size-5 text-cyan-400" />
+                </div>
+                <CardTitle className="text-xl font-black italic tracking-tight text-white">
+                  Pengelola Mail Server
+                </CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="p-8 space-y-6">
+              <div className={cn(
+                "space-y-6",
+                user?.role === "pengelola" && "grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 space-y-0"
+              )}>
+                {pengelolaMailConfigs.map((config) => (
+                  <ConfigItem
+                    key={config.id}
+                    config={config}
+                    onSave={handleUpdate}
+                    isSaving={savingKey === config.key}
+                  />
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Other Configs - OWNER ONLY */}
+        {user?.role === "owner" && (
+          <Card className="rounded-[2.5rem] bg-zinc-950/40 border-white/10 overflow-hidden backdrop-blur-xl group lg:col-span-2">
+            <CardHeader className="p-8 border-b border-white/5 bg-gradient-to-r from-emerald-500/10 to-transparent">
+              <div className="flex items-center gap-4">
+                <div className="size-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
+                  <ShieldCheck className="size-5 text-emerald-400" />
+                </div>
+                <CardTitle className="text-xl font-black italic tracking-tight text-white">
+                  System Flags & Parameters
+                </CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="p-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+                {otherConfigs.length > 0 ? (
+                  otherConfigs.map((config) => (
+                    <ConfigItem
+                      key={config.id}
+                      config={config}
+                      onSave={handleUpdate}
+                      isSaving={savingKey === config.key}
+                    />
+                  ))
+                ) : (
+                  <p className="text-zinc-500 text-xs italic py-4">
+                    No other configurations found.
+                  </p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Telegram ID Modal */}

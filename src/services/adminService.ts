@@ -87,6 +87,10 @@ export const adminService = {
   /**
    * Get infrastructure telemetry including CPU/RAM + cloud dependency status.
    */
+  getSystemHealth: async (): Promise<SystemHealthResponse> => {
+    const response = await api.get<SystemHealthResponse>("/system/health");
+    return response.data;
+  },
   /**
    * Get recent Telegram updates to find Chat IDs.
    */
