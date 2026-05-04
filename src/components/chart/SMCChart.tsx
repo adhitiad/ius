@@ -37,7 +37,7 @@ export function SMCChart({ dataOverride }: SMCChartProps) {
         <p className="text-xs text-zinc-500 font-medium uppercase tracking-widest mt-1">Smart Money Concepts Visualization</p>
       </div>
 
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
         <ComposedChart
           data={ohlc}
           margin={{ top: 20, right: 30, left: 20, bottom: 20 }}

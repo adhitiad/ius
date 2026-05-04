@@ -15,7 +15,7 @@ export function StockSparkline({ data, color = "#10b981", className }: StockSpar
 
   return (
     <div className={className} style={{ width: "100%", height: "100%" }}>
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
         <LineChart data={chartData}>
           <YAxis domain={["dataMin - 1", "dataMax + 1"]} hide />
           <Line

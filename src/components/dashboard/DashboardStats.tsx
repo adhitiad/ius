@@ -104,7 +104,7 @@ export function DashboardStats({ stats, loading }: DashboardStatsProps) {
           
           {/* Portfolio Chart Background */}
           <div className="absolute inset-0 z-0 opacity-20 group-hover:opacity-30 transition-opacity">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
               <AreaChart data={generateIndexTrend(true)}>
                 <Area type="monotone" dataKey="value" stroke="#10b981" fill="#10b981" strokeWidth={0} />
               </AreaChart>
@@ -388,7 +388,7 @@ export function DashboardStats({ stats, loading }: DashboardStatsProps) {
                 className="p-5 rounded-3xl bg-zinc-950/40 border border-white/5 hover:border-primary/40 transition-all group/idx relative overflow-hidden"
               >
                 <div className="absolute inset-0 z-0 opacity-10 group-hover/idx:opacity-20 transition-opacity">
-                   <ResponsiveContainer width="100%" height="100%">
+                   <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                       <AreaChart data={generateIndexTrend(idx.up)}>
                          <Area type="monotone" dataKey="value" stroke={idx.up ? "#10b981" : "#f43f5e"} fill={idx.up ? "#10b981" : "#f43f5e"} strokeWidth={0} />
                       </AreaChart>
