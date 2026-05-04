@@ -98,4 +98,52 @@ export const adminService = {
     const response = await api.get("/admin/telegram/updates");
     return response.data;
   },
+  /**
+   * Run infrastructure intelligence audit and send alerts if needed.
+   */
+  simulateIntelligenceAudit: async (): Promise<any> => {
+    const response = await api.post("/system/simulate-intelligence-alert");
+    return response.data;
+  },
+  /**
+   * Get autonomous agent activity logs.
+   */
+  getAgentLogs: async (limit: number = 50): Promise<any[]> => {
+    const response = await api.get("/agent/logs", { params: { limit } });
+    return response.data;
+  },
+  /**
+   * Get operational status of the autonomous agent.
+   */
+  getAgentStatus: async (): Promise<any> => {
+    const response = await api.get("/agent/status");
+    return response.data;
+  },
+  /**
+   * Get agent top picks (Top 20).
+   */
+  getAgentTopPicks: async (timeframe: string = "daily"): Promise<any[]> => {
+    const response = await api.get(`/agent/top-picks?timeframe=${timeframe}`);
+    return response.data;
+  },
+  notifyLLMMigration: async (): Promise<any> => {
+    const response = await api.post(`/agent/notify-migration`);
+    return response.data;
+  },
+  startAgent: async (): Promise<any> => {
+    const response = await api.post(`/agent/start`);
+    return response.data;
+  },
+  stopAgent: async (): Promise<any> => {
+    const response = await api.post(`/agent/stop`);
+    return response.data;
+  },
+  clearAgentLogs: async (): Promise<any> => {
+    const response = await api.delete(`/agent/logs`);
+    return response.data;
+  },
+  purgeGroq: async (): Promise<any> => {
+    const response = await api.post(`/agent/purge-groq`);
+    return response.data;
+  },
 };

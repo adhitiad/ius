@@ -2,8 +2,10 @@
 
 import { ConfigManagement } from "@/components/admin/ConfigManagement";
 import { ExportButtonGroup } from "@/components/admin/ExportButtonGroup";
+import { InfrastructureIntelligence } from "@/components/admin/InfrastructureIntelligence";
 import { SystemTelemetry } from "@/components/admin/SystemTelemetry";
 import { UserManagementTable } from "@/components/admin/UserManagementTable";
+import { AgentMonitoring } from "@/components/admin/AgentMonitoring";
 import { cn } from "@/lib/utils";
 import { adminService } from "@/services/adminService";
 import { UserProfile } from "@/types/api";
@@ -192,6 +194,9 @@ export default function AdminPage() {
           ))}
         </div>
 
+        {/* Autonomous Agent Monitoring */}
+        <AgentMonitoring />
+
         {/* User Intelligence Section */}
         <div className="bg-zinc-950/60 border border-white/10 rounded-[3rem] overflow-hidden backdrop-blur-3xl shadow-2xl relative group">
           <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none" />
@@ -244,6 +249,9 @@ export default function AdminPage() {
             />
           </div>
         </div>
+
+        {/* Infrastructure Intelligence Audit */}
+        <InfrastructureIntelligence />
 
         {/* Global System Telemetry */}
         <SystemTelemetry />

@@ -39,8 +39,10 @@ export const marketService = {
   /**
    * Get market screener top picks.
    */
-  getScreener: async (): Promise<ScreenerItem[]> => {
-    const response = await api.get<any>("/market/screener");
+  getScreener: async (timeframe: string = "daily"): Promise<ScreenerItem[]> => {
+    const response = await api.get<any>("/market/screener", {
+      params: { timeframe }
+    });
     // Backend returns {top_20: [...]} or direct array
     const raw = response.data?.top_20 ?? response.data?.results ?? response.data;
     const data: any[] = Array.isArray(raw) ? raw : [];
@@ -73,9 +75,12 @@ export const marketService = {
   /**
    * Get smart composite ranked screener picks.
    */
-  getSmartScreener: async (weights?: string): Promise<SmartScreenerItem[]> => {
+  getSmartScreener: async (timeframe: string = "daily", weights?: string): Promise<SmartScreenerItem[]> => {
     const response = await api.get<any>("/market/screener/smart", {
-      params: weights ? { weights } : {}
+      params: { 
+        timeframe,
+        ...(weights ? { weights } : {})
+      }
     });
     const raw = response.data?.results ?? response.data;
     const data = Array.isArray(raw) ? raw : [];
@@ -208,8 +213,10 @@ export const marketService = {
   /**
    * Get screener results by Tier
    */
-  getTieredScreener: async (tier: number): Promise<ScreenerItem[]> => {
-    const response = await api.get<any>(`/market/screener/tier/${tier}`);
+  getTieredScreener: async (tier: number, timeframe: string = "daily"): Promise<ScreenerItem[]> => {
+    const response = await api.get<any>(`/market/screener/tier/${tier}`, {
+      params: { timeframe }
+    });
     // Backend returns {tier, category, count, results: [...]}
     const raw = response.data?.results ?? response.data?.top_20 ?? response.data;
     const data = Array.isArray(raw) ? raw : [];

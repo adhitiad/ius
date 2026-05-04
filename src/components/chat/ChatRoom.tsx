@@ -312,6 +312,10 @@ export const ChatRoom = () => {
 
           {activeMessages.map((msg) => {
             const isUser = msg.sender === "user";
+            const thinkingMatch = msg.text.match(/<thinking>([\s\S]*?)<\/thinking>/);
+            const textWithoutThinking = msg.text
+              .replace(/<thinking>[\s\S]*?<\/thinking>/, "")
+              .trim();
 
             return (
               <div
@@ -361,28 +365,31 @@ export const ChatRoom = () => {
                             : "bg-muted/80 text-foreground rounded-tl-none border border-border/50 px-4",
                         )}
                       >
-                        {(() => {
-                          const thinkingMatch = msg.text.match(
-                            /<thinking>([\s\S]*?)<\/thinking>/,
-                          );
-                          const textWithoutThinking = msg.text
-                            .replace(/<thinking>[\s\S]*?<\/thinking>/, "")
-                            .trim();
-
-                          return (
-                            <>
-                              {thinkingMatch && (
-                                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 mb-2 font-mono text-[10px] text-emerald-400 italic">
-                                  <Bot className="size-3" />
-                                  <span>Brain is reasoning...</span>
+                        <>
+                          {thinkingMatch && (
+                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 mb-2 font-mono text-[10px] text-emerald-400 italic">
+                              <Bot className="size-3" />
+                              <span>Brain is reasoning...</span>
+                            </div>
+                          )}
+                          <div className="flex flex-col gap-3">
+                            <div className="whitespace-pre-wrap leading-relaxed">
+                              {textWithoutThinking}
+                            </div>
+                            
+                            {msg.text.includes("<thinking>") && (
+                              <details className="mt-2 group border-t border-white/5 pt-3">
+                                <summary className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500/60 cursor-pointer hover:text-emerald-400 transition-all list-none">
+                                  <span className="size-1.5 rounded-full bg-emerald-500 group-open:animate-ping" />
+                                  View Neural Core Reasoning
+                                </summary>
+                                <div className="mt-3 p-4 rounded-xl bg-black/40 border border-white/5 text-[11px] text-emerald-100/50 font-mono leading-relaxed animate-in fade-in zoom-in-95 duration-300 max-h-[300px] overflow-y-auto custom-scrollbar">
+                                  {thinkingMatch?.[1] || "Reasoning logs encrypted for security."}
                                 </div>
-                              )}
-                              <div className="whitespace-pre-wrap">
-                                {textWithoutThinking}
-                              </div>
-                            </>
-                          );
-                        })()}
+                              </details>
+                            )}
+                          </div>
+                        </>
 
                         {/* Hover Action for User */}
                         {isUser && (
@@ -445,13 +452,13 @@ export const ChatRoom = () => {
           {/* Activity Indicator (Thinking or Typing) */}
           {activeThreadId &&
             isTyping[activeThreadId] &&
-            (isTyping[activeThreadId] === "thinking" ? (
-              <AIThinkingBubble />
+            (activeThread.type === "ai" ? (
+              <AIThinkingBubble text={isTyping[activeThreadId] || undefined} />
             ) : (
               <StaffTypingBubble
                 avatar={activeThread.avatar}
                 name={activeThread.name}
-                status={isTyping[activeThreadId]}
+                status={isTyping[activeThreadId] as any}
               />
             ))}
         </div>

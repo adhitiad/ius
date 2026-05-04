@@ -12,11 +12,12 @@ export default function ScreenerPage() {
   const [data, setData] = useState<ScreenerItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [timeframe, setTimeframe] = useState<"daily" | "weekly" | "monthly">("daily");
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const screener = await marketService.getScreener();
+      const screener = await marketService.getScreener(timeframe);
       setData(screener);
     } catch (error) {
       console.error(error);
@@ -27,7 +28,7 @@ export default function ScreenerPage() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [timeframe]);
 
   const filteredData = data.filter((item) =>
     item.ticker.toLowerCase().includes(search.toLowerCase()),
@@ -128,13 +129,37 @@ export default function ScreenerPage() {
 
         {/* Screener Display */}
         <div className="bg-zinc-900/20 border border-white/5 rounded-[4rem] overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.5)] backdrop-blur-md">
-          <div className="px-12 py-10 border-b border-white/5 bg-gradient-to-r from-white/[0.01] to-transparent flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <div className="size-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10b981]" />
-              <h2 className="text-xl font-black italic tracking-tighter">
-                DAFTAR PILIHAN TOP 20
-              </h2>
+          <div className="px-12 py-10 border-b border-white/5 bg-gradient-to-r from-white/[0.01] to-transparent flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-4">
+                <div className="size-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10b981]" />
+                <h2 className="text-xl font-black italic tracking-tighter uppercase">
+                  TOP 20 {timeframe === 'daily' ? 'HARIAN' : timeframe === 'weekly' ? 'MINGGUAN' : 'BULANAN'}
+                </h2>
+              </div>
+              
+              <div className="flex bg-white/[0.03] p-1 rounded-2xl border border-white/5">
+                {[
+                  { id: 'daily', label: 'Harian' },
+                  { id: 'weekly', label: 'Mingguan' },
+                  { id: 'monthly', label: 'Bulanan' }
+                ].map((tf) => (
+                  <button
+                    key={tf.id}
+                    onClick={() => setTimeframe(tf.id as any)}
+                    className={cn(
+                      "px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                      timeframe === tf.id 
+                        ? "bg-emerald-500 text-black shadow-[0_0_20px_rgba(16,185,129,0.3)]" 
+                        : "text-zinc-500 hover:text-white"
+                    )}
+                  >
+                    {tf.label}
+                  </button>
+                ))}
+              </div>
             </div>
+            
             <button
               onClick={fetchData}
               className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 hover:text-white transition-colors"

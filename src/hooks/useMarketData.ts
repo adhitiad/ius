@@ -38,7 +38,7 @@ export interface MarketDataState {
 /**
  * Hook to manage market intelligence data fetching
  */
-export function useMarketData(tier?: number) {
+export function useMarketData(tier?: number, timeframe: string = "daily") {
   const [data, setData] = useState<MarketDataState | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -57,10 +57,10 @@ export function useMarketData(tier?: number) {
           brainSynopsis,
           insightsData
         ] = await Promise.all([
-          (tier ? marketService.getTieredScreener(tier) : marketService.getScreener()).catch(() => []),
+          (tier ? marketService.getTieredScreener(tier, timeframe) : marketService.getScreener(timeframe)).catch(() => []),
           marketService.getRadar().catch(() => ({ market_indices: [] })),
           marketService.getSystemHealth().catch(() => null),
-          marketService.getSmartScreener().catch(() => []),
+          marketService.getSmartScreener(timeframe).catch(() => []),
           marketService.getSynopsis().catch(() => ""),
           marketService.getMarketInsights().catch(() => null)
         ]);

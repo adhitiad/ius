@@ -26,7 +26,7 @@ interface ChatState {
   messages: Message[];
   activeThreadId: string | null;
   totalUnreadCount: number;
-  isTyping: Record<string, 'typing' | 'thinking' | null>;
+  isTyping: Record<string, string | null>;
   wsConnected: boolean;
   mcpConfig: {
     enabled: boolean;
@@ -41,7 +41,7 @@ interface ChatState {
   deleteMessage: (messageId: string) => void;
   clearHistory: (threadId: string) => void;
   markAsRead: (threadId: string) => void;
-  setTypingIndicator: (threadId: string, status: 'typing' | 'thinking' | null) => void;
+  setTypingIndicator: (threadId: string, status: string | null) => void;
   connectWebSocket: (threadId: string) => void;
   disconnectWebSocket: () => void;
   addThread: (thread: ChatThread) => void;
