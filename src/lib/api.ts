@@ -5,8 +5,24 @@ import axios from "axios";
  */
 const normalizeBaseUrl = (url?: string) => {
   const fallback = "/api/backend/api/v1";
-  const resolved = (url || fallback).replace(/\/+$/, "");
-  return resolved.endsWith("/api/v1") ? resolved : `${resolved}/api/v1`;
+  let resolved = (url || fallback).trim().replace(/\/+$/, "");
+  
+  // If it's a relative path (starts with /), we don't need to do much
+  if (resolved.startsWith("/")) {
+    if (resolved.includes("/api/v1")) return resolved;
+    return `${resolved}/api/v1`.replace(/\/+/g, "/");
+  }
+
+  // If it's an absolute URL
+  try {
+    const urlObj = new URL(resolved);
+    if (urlObj.pathname.endsWith("/api/v1")) return resolved;
+    urlObj.pathname = `${urlObj.pathname}/api/v1`.replace(/\/+/g, "/");
+    return urlObj.toString().replace(/\/$/, "");
+  } catch (e) {
+    // Fallback if URL is malformed
+    return resolved.endsWith("/api/v1") ? resolved : `${resolved}/api/v1`;
+  }
 };
 
 const api = axios.create({
