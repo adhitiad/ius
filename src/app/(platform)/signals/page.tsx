@@ -21,10 +21,12 @@ interface LiveSignal {
   whale_score: number;
   sentiment: string;
   source: string;
+  category: string;
 }
 
 export default function SignalsPage() {
   const [search, setSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [signals, setSignals] = useState<LiveSignal[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -50,6 +52,7 @@ export default function SignalsPage() {
         whale_score: s.whale_score ?? 50,
         sentiment: s.sentiment ?? "",
         source: s.source ?? "unknown",
+        category: s.category ?? "Other",
       }));
       setSignals(liveSignals);
       setSignalCount(data?.count ?? liveSignals.length);
@@ -69,9 +72,13 @@ export default function SignalsPage() {
     return () => clearInterval(interval);
   }, [fetchSignals]);
 
-  const filteredSignals = signals.filter(s => 
-    s.ticker.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredSignals = signals.filter(s => {
+    const matchSearch = s.ticker.toLowerCase().includes(search.toLowerCase());
+    const matchCategory = selectedCategory === "All" || s.category === selectedCategory;
+    return matchSearch && matchCategory;
+  });
+
+  const categories = ["All", "Bluechip", "Medium", "Gorengan", "Other"];
 
   const buyCount = signals.filter(s => s.type === "BUY").length;
   const sellCount = signals.filter(s => s.type === "SELL").length;
@@ -113,6 +120,24 @@ export default function SignalsPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
+            </div>
+            
+            {/* Category Filters */}
+            <div className="flex flex-wrap gap-2 mt-2">
+              {categories.map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={cn(
+                    "px-4 py-2 rounded-full text-xs font-black uppercase tracking-wider transition-all border",
+                    selectedCategory === cat 
+                      ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/50" 
+                      : "bg-white/[0.02] text-zinc-500 border-white/5 hover:bg-white/[0.05]"
+                  )}
+                >
+                  {cat}
+                </button>
+              ))}
             </div>
             <button 
               onClick={fetchSignals}
