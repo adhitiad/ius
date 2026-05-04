@@ -37,26 +37,14 @@ interface AgentLog {
   created_at: string;
 }
 
-interface TopPick {
-  ticker: string;
-  name: string;
-  final_intelligence_score: number;
-  health_status: string;
-  agent_conviction: string;
-  price: number;
-  change: number;
-}
+
 
 export function AgentMonitoring() {
   const [logs, setLogs] = useState<AgentLog[]>([]);
   const [status, setStatus] = useState<any>(null);
-  const [topPicks, setTopPicks] = useState<TopPick[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState("logs");
-  const [timeframe, setTimeframe] = useState<"daily" | "weekly" | "monthly">(
-    "daily",
-  );
   const [autoScroll, setAutoScroll] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -72,14 +60,12 @@ export function AgentMonitoring() {
   const fetchData = async (silent = false) => {
     try {
       if (!silent) setLoading(true);
-      const [logsData, statusData, picksData] = await Promise.all([
+      const [logsData, statusData] = await Promise.all([
         adminService.getAgentLogs(40),
         adminService.getAgentStatus(),
-        adminService.getAgentTopPicks(timeframe),
       ]);
       setLogs(logsData);
       setStatus(statusData);
-      setTopPicks(picksData);
     } catch (error) {
       console.error(error);
     } finally {
@@ -129,7 +115,7 @@ export function AgentMonitoring() {
     fetchData();
     const interval = setInterval(() => fetchData(true), 15000);
     return () => clearInterval(interval);
-  }, [timeframe]);
+  }, []);
 
   const handleManualRefresh = () => {
     setRefreshing(true);
@@ -381,34 +367,13 @@ export function AgentMonitoring() {
             <TabsTrigger value="logs" className="px-6 rounded-xl text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-black">
               Aliran Neural (Logs)
             </TabsTrigger>
-            <TabsTrigger value="picks" className="px-6 rounded-xl text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-black">
-              Top 20 Intelligence
-            </TabsTrigger>
+
             <TabsTrigger value="system" className="px-6 rounded-xl text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-black">
               Konfigurasi Agen
             </TabsTrigger>
           </TabsList>
 
-          {activeTab === "picks" && (
-            <div className="flex p-1 bg-zinc-950/80 border border-white/5 rounded-xl">
-              {[
-                { id: "daily", label: "Harian" },
-                { id: "weekly", label: "Mingguan" },
-                { id: "monthly", label: "Bulanan" },
-              ].map((tf) => (
-                <button
-                  key={tf.id}
-                  onClick={() => setTimeframe(tf.id as any)}
-                  className={cn(
-                    "px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all",
-                    timeframe === tf.id ? "bg-blue-600 text-white" : "text-zinc-500 hover:text-white",
-                  )}
-                >
-                  {tf.label}
-                </button>
-              ))}
-            </div>
-          )}
+
         </div>
 
         <div className="bg-zinc-950/60 border border-white/10 rounded-[3rem] overflow-hidden backdrop-blur-3xl shadow-2xl relative min-h-[500px]">
@@ -503,106 +468,7 @@ export function AgentMonitoring() {
             </ScrollArea>
           </TabsContent>
 
-          <TabsContent value="picks" className="m-0 border-none outline-none">
-            <div className="p-8 border-b border-white/5 bg-zinc-900/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-              <div className="flex items-center gap-4">
-                <div className="size-12 rounded-2xl bg-black border border-white/10 flex items-center justify-center shadow-inner">
-                  <TrendingUp className="size-6 text-amber-500" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-black text-white italic tracking-tighter">
-                    Top 20 Inteligensi{" "}
-                    <span className="text-zinc-600 uppercase text-xs tracking-widest">
-                      {timeframe === "daily" ? "Harian" : timeframe === "weekly" ? "Mingguan" : "Bulanan"}
-                    </span>
-                  </h3>
-                  <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-[0.2em]">Sintesis Alpha Tertinggi dari Agen</p>
-                </div>
-              </div>
 
-              <div className="flex items-center p-1 bg-black/40 border border-white/5 rounded-2xl">
-                <button
-                  onClick={() => setTimeframe("daily")}
-                  className={cn(
-                    "px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-                    timeframe === "daily" ? "bg-white/10 text-white shadow-xl" : "text-zinc-600 hover:text-zinc-400"
-                  )}
-                >
-                  Harian
-                </button>
-                <button
-                  onClick={() => setTimeframe("weekly")}
-                  className={cn(
-                    "px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-                    timeframe === "weekly" ? "bg-white/10 text-white shadow-xl" : "text-zinc-600 hover:text-zinc-400"
-                  )}
-                >
-                  Mingguan
-                </button>
-                <button
-                  onClick={() => setTimeframe("monthly")}
-                  className={cn(
-                    "px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-                    timeframe === "monthly" ? "bg-white/10 text-white shadow-xl" : "text-zinc-600 hover:text-zinc-400"
-                  )}
-                >
-                  Bulanan
-                </button>
-              </div>
-            </div>
-
-            <div className="p-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-                {topPicks.length === 0 ? (
-                  Array.from({ length: 8 }).map((_, i) => (
-                    <Skeleton key={i} className="h-48 rounded-3xl bg-zinc-900/50" />
-                  ))
-                ) : (
-                  topPicks.map((pick, i) => (
-                    <Card
-                      key={pick.ticker}
-                      className="bg-white/[0.02] border-white/5 rounded-3xl p-6 hover:bg-white/[0.04] hover:border-white/10 transition-all group animate-in zoom-in-95 duration-500"
-                      style={{ animationDelay: `${i * 50}ms` }}
-                    >
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="size-12 rounded-2xl bg-black border border-white/10 flex items-center justify-center font-black text-white italic tracking-tighter shadow-xl">
-                          {pick.ticker.substring(0, 4)}
-                        </div>
-                        <Badge
-                          className={cn(
-                            "text-[9px] font-black rounded-lg border",
-                            pick.agent_conviction === "HIGH"
-                              ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
-                              : "bg-blue-500/10 text-blue-500 border-blue-500/20",
-                          )}
-                        >
-                          {pick.agent_conviction} CONVICTION
-                        </Badge>
-                      </div>
-
-                      <div className="space-y-1 mb-4">
-                        <h4 className="text-lg font-black text-white italic tracking-tighter leading-none">${pick.ticker}</h4>
-                        <p className="text-[10px] text-zinc-500 font-bold truncate uppercase tracking-widest">{pick.name}</p>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/5">
-                        <div>
-                          <p className="text-[9px] text-zinc-600 font-black uppercase tracking-widest mb-1">Kesehatan</p>
-                          <p className={cn("text-xs font-black italic", pick.health_status === "PRIME" ? "text-emerald-500" : "text-amber-500")}>
-                            {pick.health_status}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-[9px] text-zinc-600 font-black uppercase tracking-widest mb-1">Neural Score</p>
-                          <p className="text-xs text-white font-black italic">{pick.final_intelligence_score}</p>
-                        </div>
-                      </div>
-                    </Card>
-                  ))
-                )}
-              </div>
-            </div>
-          </TabsContent>
 
           <TabsContent value="system" className="m-0 border-none outline-none">
             <div className="p-12 lg:p-20 flex flex-col items-center justify-center text-center">

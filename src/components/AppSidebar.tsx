@@ -66,6 +66,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       isActive: pathname === "/intelligence",
     },
     {
+      title: "Top 20 Picks",
+      url: "/intelligence/top-picks",
+      icon: Zap,
+      isActive: pathname === "/intelligence/top-picks",
+    },
+    {
       title: t.navigation.chat,
       url: "/chat",
       icon: MessageSquare,
