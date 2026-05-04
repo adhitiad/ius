@@ -12,6 +12,7 @@ const cardVariants = cva(
       type: {
         BUY: "border-emerald-500/20 shadow-emerald-500/5",
         SELL: "border-rose-500/20 shadow-rose-500/5",
+        HOLD: "border-amber-500/20 shadow-amber-500/5",
       },
     },
     defaultVariants: {
@@ -22,7 +23,7 @@ const cardVariants = cva(
 
 interface SignalCardProps extends VariantProps<typeof cardVariants> {
   ticker: string;
-  orderType: "BUY LIMIT" | "SELL LIMIT" | "MARKET BUY" | "MARKET SELL";
+  orderType: string;
   tp: number;
   sl: number;
   winRate: number;

@@ -184,6 +184,20 @@ export const marketService = {
   },
 
   /**
+   * Get live trading signals from the engine (BUY/SELL/HOLD with TP, SL, WinRate)
+   */
+  getLiveSignals: async (tier?: number): Promise<any> => {
+    try {
+      const params = tier ? { tier } : {};
+      const response = await api.get("/market/signals/live", { params });
+      return response.data;
+    } catch (e) {
+      console.error("Failed to fetch live signals", e);
+      return { signals: [], count: 0, status: "error" };
+    }
+  },
+
+  /**
    * Get intelligence context (Voted Decision & Scenarios)
    */
   getMarketIntelligence: async (ticker: string): Promise<any> => {
