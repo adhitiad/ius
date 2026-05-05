@@ -306,7 +306,7 @@ export function Header() {
                     <Zap className="size-4 text-rose-500" />
                   </div>
                   {authT.logout}
-                </motion.div>
+                </DropdownMenuItem>
               </div>
             </DropdownMenuContent>
           </DropdownMenu>
