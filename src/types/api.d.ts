@@ -17,6 +17,9 @@ export interface ApiUserProfile {
   role: UserRole;
   plan: UserPlan;
   telegram_id?: string | null;
+  whatsapp_id?: string | null;
+  subscription_expires_at?: string | null;
+  is_active: boolean;
   return_percentage?: number | null;
 }
 
@@ -27,6 +30,9 @@ export interface UserProfile {
   role: UserRole;
   plan: UserPlan;
   telegramId: string | null;
+  whatsappId: string | null;
+  subscriptionExpiresAt: string | null;
+  isActive: boolean;
   returnPercentage: number;
 }
 

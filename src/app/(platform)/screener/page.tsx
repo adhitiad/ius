@@ -134,7 +134,7 @@ export default function ScreenerPage() {
               <div className="flex items-center gap-4">
                 <div className="size-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10b981]" />
                 <h2 className="text-xl font-black italic tracking-tighter uppercase">
-                  TOP 20 {timeframe === 'daily' ? 'HARIAN' : timeframe === 'weekly' ? 'MINGGUAN' : 'BULANAN'}
+                  NEURAL DATA {timeframe === 'daily' ? 'DAILY' : timeframe === 'weekly' ? 'WEEKLY' : 'MONTHLY'}
                 </h2>
               </div>
               
@@ -162,10 +162,10 @@ export default function ScreenerPage() {
             
             <button
               onClick={fetchData}
-              className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 hover:text-white transition-colors"
+              className="px-6 py-3 rounded-2xl bg-white/[0.02] border border-white/5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 hover:text-white hover:bg-white/5 transition-all disabled:opacity-50"
               disabled={loading}
             >
-              {loading ? "Refresh..." : "Segarkan Data"}
+              {loading ? "Syncing..." : "Sync Neural Core"}
             </button>
           </div>
 

@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { User, Mail, Send, Save, Loader2, Lock } from "lucide-react";
+import { User, Mail, Send, Save, Loader2, Lock, Phone } from "lucide-react";
 import { useUpdateProfile } from "@/hooks/useUpdateProfile";
 import { toast } from "sonner";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -20,6 +20,7 @@ export default function ProfileSettingsPage() {
     fullName: "",
     email: "",
     telegramId: "",
+    whatsappId: "",
   });
   
   // Sync dengan store saat load
@@ -29,6 +30,7 @@ export default function ProfileSettingsPage() {
         fullName: user.fullName || "",
         email: user.email || "",
         telegramId: user.telegramId || "",
+        whatsappId: user.whatsappId || "",
       });
     }
   }, [user]);
@@ -36,9 +38,16 @@ export default function ProfileSettingsPage() {
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validasi WhatsApp: Harus angka saja dan dimulai dengan 62
+    if (formData.whatsappId && !/^(62)[0-9]{9,15}$/.test(formData.whatsappId)) {
+      toast.error("Format nomor WhatsApp tidak valid. Gunakan format internasional (628...) tanpa tanda + atau spasi.");
+      return;
+    }
+
     toast.promise(
       updateProfile({
         telegramId: formData.telegramId,
+        whatsappId: formData.whatsappId,
       }),
       {
         loading: t.common.saving,
@@ -97,7 +106,7 @@ export default function ProfileSettingsPage() {
               type="text"
               value={formData.telegramId}
               onChange={(e) => setFormData(prev => ({ ...prev, telegramId: e.target.value }))}
-              className="bg-zinc-950 border-zinc-800 h-11"
+              className="bg-zinc-950 border-zinc-800 h-11 focus:ring-blue-500/20"
               placeholder="Contoh: 12345678"
             />
           </div>
@@ -106,11 +115,30 @@ export default function ProfileSettingsPage() {
           </p>
         </div>
 
+        {/* WhatsApp ID Input */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-zinc-400 flex items-center gap-2">
+            <Phone className="w-4 h-4" /> WhatsApp Number
+          </label>
+          <div className="relative">
+            <Input 
+              type="text"
+              value={formData.whatsappId}
+              onChange={(e) => setFormData(prev => ({ ...prev, whatsappId: e.target.value }))}
+              className="bg-zinc-950 border-zinc-800 h-11 focus:ring-emerald-500/20"
+              placeholder="Contoh: 628123456789"
+            />
+          </div>
+          <p className="text-[11px] text-emerald-400/80">
+            Gunakan format internasional (628...). Digunakan untuk notifikasi sinyal via WhatsApp.
+          </p>
+        </div>
+
         <div className="pt-4">
           <Button 
             type="submit" 
             disabled={isSaving}
-            className="w-full bg-blue-600 hover:bg-blue-700 h-11 font-bold text-white shadow-xl shadow-blue-600/10"
+            className="w-full bg-blue-600 hover:bg-blue-700 h-12 font-black text-xs uppercase tracking-widest text-white shadow-xl shadow-blue-600/10 transition-all active:scale-95"
           >
             {isSaving ? (
               <>

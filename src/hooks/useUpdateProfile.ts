@@ -3,7 +3,8 @@ import { authService } from "@/services/authService";
 import { useAuthStore } from "@/store/useAuthStore";
 
 interface UpdateProfilePayload {
-  telegramId: string;
+  telegramId?: string;
+  whatsappId?: string;
 }
 
 export const useUpdateProfile = () => {
@@ -12,15 +13,20 @@ export const useUpdateProfile = () => {
 
   return useMutation({
     mutationFn: async (payload: UpdateProfilePayload) => {
-      return authService.updateTelegramId(payload.telegramId);
+      let updatedUser;
+      if (payload.telegramId !== undefined) {
+        updatedUser = await authService.updateTelegramId(payload.telegramId);
+      }
+      if (payload.whatsappId !== undefined) {
+        updatedUser = await authService.updateWhatsappId(payload.whatsappId);
+      }
+      return updatedUser;
     },
     onSuccess: (updatedProfile) => {
       queryClient.invalidateQueries({ queryKey: ["userProfile"] });
 
-      if (user) {
-        updateUser({
-          telegramId: updatedProfile.telegramId,
-        });
+      if (user && updatedProfile) {
+        updateUser(updatedProfile);
       }
     },
   });

@@ -13,6 +13,9 @@ const normalizeUserProfile = (user: ApiUserProfile): UserProfile => ({
   role: user.role,
   plan: user.plan,
   telegramId: user.telegram_id ?? null,
+  whatsappId: user.whatsapp_id ?? null,
+  subscriptionExpiresAt: user.subscription_expires_at ?? null,
+  isActive: user.is_active,
   returnPercentage: Number(user.return_percentage ?? 0),
 });
 
@@ -58,6 +61,16 @@ export const authService = {
   updateTelegramId: async (telegramId: string): Promise<UserProfile> => {
     const response = await api.put<ApiUserProfile>("/users/telegram", {
       telegram_id: telegramId,
+    });
+    return normalizeUserProfile(response.data);
+  },
+
+  /**
+   * Update user WhatsApp ID for notifications
+   */
+  updateWhatsappId: async (whatsappId: string): Promise<UserProfile> => {
+    const response = await api.put<ApiUserProfile>("/users/whatsapp", {
+      whatsapp_id: whatsappId,
     });
     return normalizeUserProfile(response.data);
   },
