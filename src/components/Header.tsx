@@ -12,6 +12,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { Kbd } from "@/components/ui/kbd";
+import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useTranslation } from "@/hooks/useTranslation";
 import { cn } from "@/lib/utils";
@@ -67,7 +69,7 @@ export function Header() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 flex h-20 w-full shrink-0 items-center px-6 transition-all duration-500",
+        "sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
         scrolled
           ? "bg-black/60 backdrop-blur-2xl border-b border-white/10 h-16"
           : "bg-transparent border-b border-transparent",
@@ -83,25 +85,14 @@ export function Header() {
             aria-label={t.common.open_sidebar}
           />
 
-          <div className="hidden lg:flex items-center gap-3 px-4 py-2 rounded-2xl bg-emerald-500/5 border border-emerald-500/10 backdrop-blur-md group cursor-default">
-            <div className="relative size-2">
-              <div className="absolute inset-0 bg-emerald-500 rounded-full animate-ping opacity-75" />
-              <div className="relative size-2 bg-emerald-500 rounded-full shadow-[0_0_8px_#10b981]" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-[8px] font-black uppercase tracking-[0.2em] text-emerald-500/70 leading-none">
-                Neural_Grid
-              </span>
-              <span className="text-[7px] font-bold text-zinc-600 uppercase tracking-widest mt-0.5 group-hover:text-emerald-500/50 transition-colors">
-                Latency: 12ms
-              </span>
-            </div>
-          </div>
-
-          <div className="h-8 w-px bg-white/5 mx-2 hidden xl:block" />
+          <Separator orientation="vertical" className="mr-2 h-4" />
 
           {/* Expanded Desktop Navigation */}
-          <nav className="hidden xl:flex items-center gap-1">
+          <nav
+            className="hidden xl:flex items-center gap-1"
+            role="navigation"
+            aria-label="Main navigation"
+          >
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
@@ -110,7 +101,7 @@ export function Header() {
                     variant="ghost"
                     size="sm"
                     className={cn(
-                      "h-9 px-4 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 relative group",
+                      "px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground rounded-md hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background",
                       isActive
                         ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
                         : "text-zinc-500 hover:text-white hover:bg-white/5",
@@ -130,14 +121,19 @@ export function Header() {
           </nav>
         </div>
 
-        <div className="flex-1 max-w-md mx-auto hidden md:block">
-          <div className="relative group">
-            <div className="absolute inset-0 bg-emerald-500/5 rounded-2xl blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity" />
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-zinc-600 group-focus-within:text-emerald-500 transition-colors z-10" />
+        <div className="ml-auto flex items-center gap-4">
+          <div className="hidden md:flex relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <Input
-              placeholder="Deep Neural Search..."
-              className="relative w-full bg-zinc-900/40 border-white/5 pl-12 rounded-2xl h-10 text-xs font-bold tracking-tight focus:ring-1 focus:ring-emerald-500/20 focus:border-emerald-500/30 transition-all text-white placeholder:text-zinc-700 z-10"
+              type="search"
+              placeholder="Search..."
+              className="pl-8 w-[200px] lg:w-[280px] h-9 bg-secondary border-none"
+              aria-label="Search"
             />
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+              <Kbd>⌘/Ctrl</Kbd>
+              <Kbd>K</Kbd>
+            </div>
           </div>
         </div>
 
@@ -238,14 +234,16 @@ export function Header() {
                     icon: User,
                     color: "text-blue-400",
                   },
-                  ...(isAdmin ? [
-                    {
-                      title: "Admin Control",
-                      href: "/admin",
-                      icon: Settings,
-                      color: "text-amber-400",
-                    }
-                  ] : []),
+                  ...(isAdmin
+                    ? [
+                        {
+                          title: "Admin Control",
+                          href: "/admin",
+                          icon: Settings,
+                          color: "text-amber-400",
+                        },
+                      ]
+                    : []),
                   {
                     title: t.navigation.security_vault,
                     href: "/security",
