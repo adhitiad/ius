@@ -2,6 +2,7 @@
 
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
