@@ -21,6 +21,7 @@ export const en: Dictionary = {
     management: "Management",
     platform: "Platform",
     sign_out: "Sign Out",
+    telegram_alerts: "Telegram Alerts",
   },
   common: {
     save: "Save",

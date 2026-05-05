@@ -16,6 +16,7 @@ import {
   MessageSquare,
   Brain,
   Shield,
+  Send,
 } from "lucide-react"
 import { useChatStore } from "@/store/useChatStore"
 
@@ -125,6 +126,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       url: "/admin",
       icon: ShieldCheck,
       roles: ["owner", "pengelola"],
+    },
+    {
+      title: t.navigation.telegram_alerts,
+      url: "/admin#telegram-config",
+      icon: Send,
+      roles: ["owner"],
     },
   ]
 

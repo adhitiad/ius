@@ -19,6 +19,7 @@ export const id = {
     management: "Manajemen",
     platform: "Platform",
     sign_out: "Keluar Sesi",
+    telegram_alerts: "Alert Telegram",
   },
   common: {
     save: "Simpan",

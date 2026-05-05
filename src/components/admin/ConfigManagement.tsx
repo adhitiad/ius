@@ -138,7 +138,7 @@ export function ConfigManagement() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Telegram Configs - Show for both, but filter content if needed */}
-        <Card className="rounded-[2.5rem] bg-zinc-950/40 border-white/10 overflow-hidden backdrop-blur-xl group lg:col-span-2">
+        <Card id="telegram-config" className="rounded-[2.5rem] bg-zinc-950/40 border-white/10 overflow-hidden backdrop-blur-xl group lg:col-span-2">
           <CardHeader className="p-8 border-b border-white/5 bg-gradient-to-r from-blue-500/10 to-transparent">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-4">
