@@ -17,6 +17,9 @@ const normalizeUserProfile = (user: ApiUserProfile): UserProfile => ({
   role: user.role,
   plan: user.plan,
   telegramId: user.telegram_id ?? null,
+  whatsappId: user.whatsapp_id ?? null,
+  subscriptionExpiresAt: user.subscription_expires_at ?? null,
+  isActive: !!user.is_active,
   returnPercentage: Number(user.return_percentage ?? 0),
 });
 
