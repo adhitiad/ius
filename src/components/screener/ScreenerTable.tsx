@@ -1,6 +1,8 @@
 "use client";
 
 import { StockDetailSheet } from "@/components/dashboard/StockDetailSheet";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -12,31 +14,44 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { ScreenerItem } from "@/types/api";
-import { Badge } from "@/components/ui/badge";
 import {
   ColumnDef,
+  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
-  getPaginationRowModel,
   getFilteredRowModel,
+  getPaginationRowModel,
   useReactTable,
-  ColumnFiltersState,
 } from "@tanstack/react-table";
-import { Target, TrendingDown, TrendingUp, Zap, ShieldCheck, ChevronLeft, ChevronRight, Filter } from "lucide-react";
+import { AnimatePresence, motion, Variants } from "framer-motion";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Filter,
+  ShieldCheck,
+  TrendingDown,
+  TrendingUp,
+  Zap,
+} from "lucide-react";
 import * as React from "react";
 import { useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "@/components/ui/button";
 
 interface ScreenerTableProps {
   data: ScreenerItem[];
   loading: boolean;
 }
 
+const MotionTableBody = motion(TableBody);
+const MotionTableRow = motion(TableRow);
+
 export function ScreenerTable({ data, loading }: ScreenerTableProps) {
-  const [selectedTicker, setSelectedTicker] = React.useState<string | null>(null);
+  const [selectedTicker, setSelectedTicker] = React.useState<string | null>(
+    null,
+  );
   const [isSheetOpen, setIsSheetOpen] = React.useState(false);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
 
   const handleRowClick = (rowData: ScreenerItem) => {
     setSelectedTicker(rowData.ticker);
@@ -63,7 +78,10 @@ export function ScreenerTable({ data, loading }: ScreenerTableProps) {
                   {row.original.ticker}
                 </div>
                 {row.original.is_fallback && (
-                  <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/20 text-[7px] h-4 px-1.5 font-black leading-none uppercase tracking-widest">
+                  <Badge
+                    variant="outline"
+                    className="bg-amber-500/10 text-amber-500 border-amber-500/20 text-[7px] h-4 px-1.5 font-black leading-none uppercase tracking-widest"
+                  >
                     FALLBACK
                   </Badge>
                 )}
@@ -71,7 +89,9 @@ export function ScreenerTable({ data, loading }: ScreenerTableProps) {
               <div className="flex items-center gap-1.5">
                 <div className="size-1 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
                 <div className="text-[9px] font-black text-zinc-600 uppercase tracking-widest group-hover:text-zinc-400 transition-colors">
-                  {row.original.is_fallback ? "Secondary Network" : "Verified Intelligence"}
+                  {row.original.is_fallback
+                    ? "Secondary Network"
+                    : "Verified Intelligence"}
                 </div>
               </div>
             </div>
@@ -90,7 +110,9 @@ export function ScreenerTable({ data, loading }: ScreenerTableProps) {
                 maximumFractionDigits: 0,
               }).format(row.original.price)}
             </div>
-            <span className="text-[9px] font-bold text-zinc-700 uppercase tracking-widest leading-none mt-1">Real-time Node</span>
+            <span className="text-[9px] font-bold text-zinc-700 uppercase tracking-widest leading-none mt-1">
+              Real-time Node
+            </span>
           </div>
         ),
       },
@@ -129,7 +151,9 @@ export function ScreenerTable({ data, loading }: ScreenerTableProps) {
           return (
             <div className="space-y-2.5 w-36">
               <div className="flex justify-between text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600">
-                <span className="flex items-center gap-1"><Zap className="size-2.5" /> RSI INDEX</span>
+                <span className="flex items-center gap-1">
+                  <Zap className="size-2.5" /> RSI INDEX
+                </span>
                 <span
                   className={cn(
                     "tabular-nums",
@@ -229,7 +253,7 @@ export function ScreenerTable({ data, loading }: ScreenerTableProps) {
     },
   });
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
@@ -239,12 +263,13 @@ export function ScreenerTable({ data, loading }: ScreenerTableProps) {
     },
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 10 },
     show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100 } },
   };
 
-  const signalFilter = (columnFilters.find(f => f.id === 'signal')?.value as string) || 'ALL';
+  const signalFilter =
+    (columnFilters.find((f) => f.id === "signal")?.value as string) || "ALL";
 
   if (loading && !data.length) {
     return (
@@ -266,18 +291,24 @@ export function ScreenerTable({ data, loading }: ScreenerTableProps) {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-zinc-900/50 border border-white/5">
             <Filter className="size-3 text-zinc-500" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Signal Filter</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+              Signal Filter
+            </span>
           </div>
           <div className="flex bg-zinc-950 p-1 rounded-xl border border-white/5">
-            {['ALL', 'BUY', 'SELL'].map((sig) => (
+            {["ALL", "BUY", "SELL"].map((sig) => (
               <button
                 key={sig}
-                onClick={() => table.getColumn('signal')?.setFilterValue(sig === 'ALL' ? undefined : sig)}
+                onClick={() =>
+                  table
+                    .getColumn("signal")
+                    ?.setFilterValue(sig === "ALL" ? undefined : sig)
+                }
                 className={cn(
                   "px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
-                  signalFilter === sig 
-                    ? "bg-primary text-black shadow-[0_0_15px_rgba(16,185,129,0.3)]" 
-                    : "text-zinc-600 hover:text-white"
+                  signalFilter === sig
+                    ? "bg-primary text-black shadow-[0_0_15px_rgba(16,185,129,0.3)]"
+                    : "text-zinc-600 hover:text-white",
                 )}
               >
                 {sig}
@@ -288,7 +319,8 @@ export function ScreenerTable({ data, loading }: ScreenerTableProps) {
 
         <div className="flex items-center gap-4">
           <span className="text-[10px] font-black uppercase tracking-widest text-zinc-600">
-            Node {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+            Node {table.getState().pagination.pageIndex + 1} of{" "}
+            {table.getPageCount()}
           </span>
           <div className="flex gap-2">
             <Button
@@ -338,37 +370,40 @@ export function ScreenerTable({ data, loading }: ScreenerTableProps) {
                 </TableRow>
               ))}
             </TableHeader>
-            <TableBody component={motion.tbody} variants={containerVariants} initial="hidden" animate="show">
+            <MotionTableBody
+              variants={containerVariants}
+              initial="hidden"
+              animate="show"
+            >
               <AnimatePresence mode="popLayout">
                 {table.getRowModel().rows.map((row) => (
-                  <TableRow
+                  <MotionTableRow
                     key={row.id}
-                    asChild
                     onClick={() => handleRowClick(row.original)}
+                    variants={itemVariants}
+                    layout
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="group hover:bg-white/[0.03] cursor-pointer transition-all duration-500 border-b border-white/5 last:border-0 relative overflow-hidden"
                   >
-                    <motion.tr
-                      variants={itemVariants}
-                      layout
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      className="group hover:bg-white/[0.03] cursor-pointer transition-all duration-500 border-b border-white/5 last:border-0 relative overflow-hidden"
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell
-                          key={cell.id}
-                          className="px-10 py-8 group-hover:bg-primary/[0.01] transition-colors duration-500"
-                        >
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </TableCell>
-                      ))}
-                      {/* Hover indicator line */}
-                      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-0 group-hover:h-12 bg-primary transition-all duration-500 rounded-full shadow-[0_0_15px_var(--color-primary)] opacity-0 group-hover:opacity-100" />
-                    </motion.tr>
-                  </TableRow>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell
+                        key={cell.id}
+                        className="px-10 py-8 group-hover:bg-primary/[0.01] transition-colors duration-500"
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                    {/* Hover indicator line */}
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-0 group-hover:h-12 bg-primary transition-all duration-500 rounded-full shadow-[0_0_15px_var(--color-primary)] opacity-0 group-hover:opacity-100" />
+                  </MotionTableRow>
                 ))}
               </AnimatePresence>
-            </TableBody>
+            </MotionTableBody>
           </Table>
         </div>
       </div>
